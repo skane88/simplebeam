@@ -9,3 +9,8 @@ def test_initial():
     """
 
     assert False
+
+
+def test_2():
+
+    pass
