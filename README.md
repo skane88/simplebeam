@@ -1,4 +1,7 @@
 # Simple Beam
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 A basic beam bending analysis package, intended to do very simply beam bending moment & shear force analysis. The method used is McCauley's method, and the implementation is based on SymPy's beam analysis module, just more nicely wrapped for everyday usage.
 
 The use of the term "Simple" does not mean that only simply-supported beams will be included in this package. McCauley's method can handle fixed ended (and even multi-span)
