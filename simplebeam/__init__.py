@@ -10,4 +10,4 @@ def main():
     Dummy function, will be removed when we get some functionality going.
     """
 
-    raise NotImplementedError()
+    print("Hello World")

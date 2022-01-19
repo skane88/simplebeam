@@ -2,10 +2,14 @@
 Initial test file.
 """
 
+import simplebeam
+
 
 def test_initial():
     """
     Initial test to get things working.
     """
 
-    assert False
+    simplebeam.main()
+
+    assert True
