@@ -19,3 +19,15 @@ class LoadPositionError(LoadError):
     """
     Class for errors related to the position of the load.
     """
+
+
+class RestraintError(SimpleBeamError):
+    """
+    Parent class for errors in the Restraint classes.
+    """
+
+
+class RestraintPositionError(RestraintError):
+    """
+    Class for errors related to the position of the restraint.
+    """
