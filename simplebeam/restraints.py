@@ -105,6 +105,6 @@ class Restraint:
     def __repr__(self):
         return (
             f"{type(self).__name__}: "
-            + f"{self.restraint_type} "
+            + f"{self.restraint_type} ({self.restraint_code}) "
             + f"at position={repr(self.position)}"
         )
