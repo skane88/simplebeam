@@ -53,6 +53,11 @@ class Load:
         self.order = order
         self._magnitude = magnitude
 
+        if start is not None and start < 0:
+            raise LoadPositionError(
+                f"Load start position must be > 0. Received start = {start}"
+            )
+
         if start is not None and end is not None and end < start:
             raise LoadPositionError(
                 f"Expected end to be > start. Received start = {start} > end = {end}"
