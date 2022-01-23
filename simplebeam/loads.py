@@ -2,6 +2,8 @@
 Define a class hierarchy for loads.
 """
 
+from simplebeam.exceptions import LoadPositionError
+
 # load orders based on McCauley's method. Used to set the order of the singularity
 # functions used.
 ORDERS = {
@@ -50,6 +52,12 @@ class Load:
 
         self.order = order
         self._magnitude = magnitude
+
+        if start is not None and end is not None and end < start:
+            raise LoadPositionError(
+                f"Expected end to be > start. Received start = {start} > end = {end}"
+            )
+
         self._start = start
         self._end = end
 

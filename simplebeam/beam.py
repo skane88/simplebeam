@@ -8,6 +8,7 @@ from typing import Union, Optional
 from sympy.physics.continuum_mechanics.beam import Beam as symBeam  # type: ignore
 
 from simplebeam.loads import Load
+from simplebeam.exceptions import LoadPositionError
 
 
 class Beam:
@@ -24,7 +25,7 @@ class Beam:
         second_moment: Number,
         length: Number,
         restraints=None,
-        loads: Union[list[Load], Load] = None
+        loads: Union[list[Load], Load] = None,
     ):
         """
 
@@ -143,7 +144,46 @@ class Beam:
         if isinstance(load, list):
 
             for individual_load in load:
+
+                self.validate_load(individual_load)
+
                 self._loads.append(individual_load)
 
         else:
+
+            self.validate_load(load)
+
             self._loads.append(load)
+
+    def validate_load(self, load: Load, raise_exceptions: bool = True):
+        """
+        Validate a load is correct. Currently only checks that it is located on the
+        beam but additional checks may be added.
+
+        :param load: The load to valicate
+        :param raise_exceptions: If True, raise an exception on discovering an invalid
+            load.
+        :return: True if valid.
+        """
+
+        if load.start is not None and (load.start < 0 or load.start > self.length):
+
+            if raise_exceptions:
+                raise LoadPositionError(
+                    "Load start position must be on the beam "
+                    + f"(0 < start < {self.length}). Received start = {load.start}"
+                )
+
+            return False
+
+        if load.end is not None and load.end < 0:
+
+            if raise_exceptions:
+                raise LoadPositionError(
+                    "Load end position must be greater than 0. "
+                    + f"Received end = {load.end}"
+                )
+
+            return False
+
+        return True
