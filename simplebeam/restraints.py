@@ -56,6 +56,7 @@ class Restraint:
 
         self._dy = dy
         self._rz = rz
+        self._position = position
 
     @property
     def dy(self):
@@ -76,3 +77,34 @@ class Restraint:
         """
 
         return self._rz
+
+    @property
+    def restraint_type(self):
+        """
+        The restraint type ("fixed", "pin" or "free")
+        """
+
+        return RESTRAINT_TYPE[(self.dy, self.rz)]
+
+    @property
+    def restraint_code(self):
+        """
+        The restraint code ("ff", "fr" or "rr")
+        """
+
+        return RESTRAINT_CODE[(self.dy, self.rz)]
+
+    @property
+    def position(self):
+        """
+        The position of the restraint.
+        """
+
+        return self._position
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}: "
+            + f"{self.restraint_type} "
+            + f"at position={repr(self.position)}"
+        )
