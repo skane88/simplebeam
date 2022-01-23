@@ -33,7 +33,8 @@ class Beam:
         :param second_moment: The second moment of inertia.
         :param length: The length of the beam.
         :param restraints: Any restraints applied to the beam.
-        :param loads: Any loads applied to the beam.
+        :param loads: Any loads applied to the beam. Can be applied later with
+            self.add_load.
         """
 
         self.elastic_modulus = elastic_modulus
