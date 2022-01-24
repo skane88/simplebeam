@@ -193,7 +193,7 @@ class Beam:
         """
         Add a load onto the beam.
 
-        :param load: The load to add.
+        :param load: The Load object to add, or a list of Load objects.
         """
 
         self._solved = False
