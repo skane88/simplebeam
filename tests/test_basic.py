@@ -44,7 +44,8 @@ def test_add_load():
 
 def test_add_restraint():
     """
-    Very basic test of the Beam class to see if a restraint can be added without crashing.
+    Very basic test of the Beam class to see if a restraint can be added without
+    crashing.
     """
 
     beam = simplebeam.Beam(
