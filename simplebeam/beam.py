@@ -5,7 +5,8 @@ Basic Beam element class.
 from numbers import Number
 from typing import Union, Optional
 
-from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
+from sympy import symbols
+from sympy.physics.continuum_mechanics.beam import Beam as SymBeam
 
 from simplebeam.loads import Load
 from simplebeam.restraints import Restraint
@@ -39,6 +40,7 @@ class Beam:
             self.add_load.
         """
 
+        self._solved = False
         self.elastic_modulus = elastic_modulus
         self.second_moment = second_moment
         self.length = length
@@ -49,12 +51,7 @@ class Beam:
         self._loads = []
         self.add_load(load=loads)
 
-        self._symbeam = SymBeam(
-            length=self.length,
-            elastic_modulus=self.elastic_modulus,
-            second_moment=self.second_moment,
-        )
-        self._solved = False
+        self._symbeam = self._build_symbeam()
 
     @property
     def solved(self):
@@ -240,3 +237,36 @@ class Beam:
             return False
 
         return True
+
+    def _build_symbeam(self):
+        """
+        Takes the data on the beam and builds the underlying SymPy beam.
+        """
+
+        beam = SymBeam(
+            length=self.length,
+            elastic_modulus=self.elastic_modulus,
+            second_moment=self.second_moment,
+        )
+
+        for load in self.loads:
+
+            beam.apply_load(
+                value=load.magnitude, start=load.start, order=load.order, end=load.end
+            )
+
+        boundary_variables = []
+
+        for i, restraint in enumerate(self.restraints):
+
+            if restraint.dy:
+                beam.bc_deflection.append((restraint.position, 0))
+
+                boundary_variables.append(symbols(f"R{i}"))
+
+            if restraint.rz:
+                beam.bc_slope.append((restraint.position, 0))
+
+                boundary_variables.append(symbols(f"M{i}"))
+
+        self._boundary_variables = boundary_variables
