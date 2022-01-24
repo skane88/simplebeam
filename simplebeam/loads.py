@@ -63,6 +63,9 @@ class Load:
                 f"Expected end to be > start. Received start = {start} > end = {end}"
             )
 
+        if start is None:
+            start = 0.0
+
         self._start = start
         self._end = end
 
@@ -114,9 +117,15 @@ class Load:
         return LOAD_TYPES_BY_ORDER[self.order]
 
     def __repr__(self):
+
+        if self.order < 0:
+            position = f"at position={repr(self.start)}"
+        else:
+            position = f"between position={repr(self.start)} and ={repr(self.end)}"
+
         return (
             f"{type(self).__name__} "
             + f"of type {self.load_type} "
             + f"with magnitude={repr(self.magnitude)} "
-            + f"between position={repr(self.start)} and ={repr(self.end)}"
+            + position
         )
