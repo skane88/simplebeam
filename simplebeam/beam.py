@@ -52,7 +52,6 @@ class Beam:
         self._loads = []
         self.add_load(load=loads)
 
-        self._boundary_variables = []
         self._symbeam = None
 
     @property
@@ -264,29 +263,17 @@ class Beam:
                 value=load.magnitude, start=load.start, order=load.order, end=load.end
             )
 
-        boundary_variables = []
-
-        for i, restraint in enumerate(self.restraints):
-
+        for restraint in self.restraints:
             if restraint.dy:
                 beam.bc_deflection.append((restraint.position, 0))
 
-                bv_symbol = f"R{i}"
-
-                beam.apply_load(bv_symbol, restraint.position, order=-1)
-
-                boundary_variables.append(symbols(bv_symbol))
+                beam.apply_load(restraint.ry_variable, restraint.position, order=-1)
 
             if restraint.rz:
                 beam.bc_slope.append((restraint.position, 0))
 
-                bv_symbol = f"M{i}"
+                beam.apply_load(restraint.mz_variable, restraint.position, order=-2)
 
-                beam.apply_load(bv_symbol, restraint.position, order=-2)
-
-                boundary_variables.append(symbols(bv_symbol))
-
-        self._boundary_variables = boundary_variables
         self._symbeam = beam
 
     def solve_beam(self):
@@ -294,13 +281,24 @@ class Beam:
         Solve the underlying SymPy beam object.
         """
 
-        if not self.solved:
+        if self.solved:
+            return
             # no need to redo the work if this was already successfully solved.
             # does rely on people using the setters rather than the overwriting
             # protected variables.
 
-            self._build_symbeam()  # build the SymPy beam in case there were changes from
-            # whatever was last created.
+        self._build_symbeam()  # build the SymPy beam in case there were changes from
+        # whatever was last created.
 
-            self._symbeam.solve_for_reaction_loads(*self._boundary_variables)
-            self._solved = True
+        unknowns = []
+
+        for restraint in self.restraints:
+
+            if restraint.dy:
+                unknowns.append(symbols(restraint.ry_variable))
+
+            if restraint.rz:
+                unknowns.append(symbols(restraint.mz_variable))
+
+        self._symbeam.solve_for_reaction_loads(*unknowns)
+        self._solved = True

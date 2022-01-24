@@ -2,7 +2,7 @@
 File for the Restraint class.
 """
 
-from typing import Union
+from typing import Union, Optional
 
 from simplebeam.exceptions import RestraintError, RestraintPositionError
 
@@ -93,6 +93,24 @@ class Restraint:
         """
 
         return RESTRAINT_CODE[(self.dy, self.rz)]
+
+    @property
+    def ry_variable(self) -> Optional[str]:
+        """
+        Returns a variable name for the unknown reaction along the y axis that will
+        occur at this restraint.
+        """
+
+        return "R_" + str(self.position).replace(".", "_") if self.dy else None
+
+    @property
+    def mz_variable(self) -> Optional[str]:
+        """
+        Returns a variable name for the unknown moment reaction about the z axis
+        that will occur at this restraint.
+        """
+
+        return "M_" + str(self.position).replace(".", "_") if self.rz else None
 
     @property
     def position(self):
