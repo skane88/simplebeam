@@ -127,10 +127,11 @@ class Beam:
         return self._loads
 
     @loads.setter
-    def loads(self, loads: Optional[list[Load]] = None):
-        self._solved = False
+    def loads(self, loads: Union[list[Load], Load] = None):
 
-        self._loads = [] if loads is None else loads
+        self._solved = False
+        self._loads = []
+        self.add_load(load=loads)
 
     def add_load(self, load: Union[list[Load], Load] = None):
         """
