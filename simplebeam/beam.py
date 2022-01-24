@@ -5,8 +5,8 @@ Basic Beam element class.
 from numbers import Number
 from typing import Union, Optional
 
-from sympy import symbols
-from sympy.physics.continuum_mechanics.beam import Beam as SymBeam
+from sympy import symbols  # type: ignore
+from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.loads import Load
 from simplebeam.restraints import Restraint
