@@ -107,7 +107,8 @@ class Beam:
     @property
     def restraints(self) -> list[Restraint]:
         """
-        The restraints for the beam.
+        The restraints for the beam. These will be sorted left-to-right (from 0.0 to
+        self.length).
         """
 
         return self._restraints
@@ -132,14 +133,14 @@ class Beam:
         if isinstance(restraint, list):
             for individual_restraint in restraint:
                 self.validate_restraint(individual_restraint)
-
                 self._restraints.append(individual_restraint)
 
         else:
 
             self.validate_restraint(restraint)
-
             self._restraints.append(restraint)
+
+        self._restraints.sort(key=lambda x: x.position)
 
     def validate_restraint(self, restraint: Restraint, raise_exceptions: bool = True):
         """
@@ -256,6 +257,8 @@ class Beam:
             elastic_modulus=self.elastic_modulus,
             second_moment=self.second_moment,
         )
+
+        self._restraints.sort(key=lambda x: x.position)
 
         for load in self.loads:
 
