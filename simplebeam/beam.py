@@ -42,7 +42,9 @@ class Beam:
         self.elastic_modulus = elastic_modulus
         self.second_moment = second_moment
         self.length = length
-        self.restraints = restraints
+
+        self._restraints = []
+        self.add_restraint(restraint=restraints)
 
         self._loads = []
         self.add_load(load=loads)
@@ -113,10 +115,57 @@ class Beam:
         return self._restraints
 
     @restraints.setter
-    def restraints(self, restraints: Optional[list[Restraint]] = None):
+    def restraints(self, restraints: Union[list[Restraint], Restraint] = None):
 
         self._solved = False
-        self._restraints = [] if restraints is None else restraints
+        self._restraints = []
+        self.add_restraint(restraint=restraints)
+
+    def add_restraint(self, *, restraint: Union[list[Restraint], Restraint] = None):
+        """
+        Add a restraint to the Beam.
+
+        :param restraint: The restraint or a list of restraints to add.
+        """
+
+        if restraint is None:
+            return
+
+        if isinstance(restraint, list):
+            for individual_restraint in restraint:
+                self.validate_restraint(individual_restraint)
+
+                self._restraints.append(individual_restraint)
+
+        else:
+
+            self.validate_restraint(restraint)
+
+            self._restraints.append(restraint)
+
+    def validate_restraint(self, restraint: Restraint, raise_exceptions: bool = True):
+        """
+        Validate a restraint is correct. Currently only checks that it is located on the
+        beam but additional checks may be added.
+
+        :param restraint: The restraint to valicate
+        :param raise_exceptions: If True, raise an exception on discovering an invalid
+            restraint.
+        :return: True if valid.
+        """
+
+        if restraint.position < 0 or restraint.position > self.length:
+
+            if raise_exceptions:
+                raise RestraintPositionError(
+                    "Restraint position must be on the beam "
+                    + f"(0 < start < {self.length}). "
+                    + f"Received position = {restraint.position}"
+                )
+
+            return False
+
+        return True
 
     @property
     def loads(self) -> list[Load]:
