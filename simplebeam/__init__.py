@@ -6,3 +6,4 @@ __version__ = "0.0.1"
 
 from simplebeam.beam import Beam
 from simplebeam.loads import Load
+from simplebeam.restraints import Restraint
