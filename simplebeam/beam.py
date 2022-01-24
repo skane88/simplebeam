@@ -164,6 +164,15 @@ class Beam:
 
             return False
 
+        for i, each_restraint in enumerate(self.restraints):
+
+            if restraint.position == each_restraint.position:
+                raise RestraintPositionError(
+                    "Restraints must be in different locations. "
+                    + f"Restraint {restraint} is located at the same position as "
+                    + f"restraint {i} ({each_restraint})"
+                )
+
         return True
 
     @property
