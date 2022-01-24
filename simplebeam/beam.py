@@ -8,7 +8,8 @@ from typing import Union, Optional
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.loads import Load
-from simplebeam.exceptions import LoadPositionError
+from simplebeam.restraints import Restraint
+from simplebeam.exceptions import LoadPositionError, RestraintPositionError
 
 
 class Beam:
@@ -17,6 +18,7 @@ class Beam:
     """
 
     _loads: list[Load]
+    _restraints: list[Restraint]
 
     def __init__(
         self,
@@ -24,7 +26,7 @@ class Beam:
         elastic_modulus: Number,
         second_moment: Number,
         length: Number,
-        restraints=None,
+        restraints: Union[list[Restraint], Restraint] = None,
         loads: Union[list[Load], Load] = None,
     ):
         """
@@ -103,7 +105,7 @@ class Beam:
         self._length = length
 
     @property
-    def restraints(self):
+    def restraints(self) -> list[Restraint]:
         """
         The restraints for the beam.
         """
@@ -111,10 +113,10 @@ class Beam:
         return self._restraints
 
     @restraints.setter
-    def restraints(self, restraints):
+    def restraints(self, restraints: Optional[list[Restraint]] = None):
 
         self._solved = False
-        self._restraints = restraints
+        self._restraints = [] if restraints is None else restraints
 
     @property
     def loads(self) -> list[Load]:
