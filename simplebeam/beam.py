@@ -5,7 +5,7 @@ Basic Beam element class.
 from numbers import Number
 from typing import Union, Optional
 
-from sympy.physics.continuum_mechanics.beam import Beam as symBeam  # type: ignore
+from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.loads import Load
 from simplebeam.exceptions import LoadPositionError
@@ -45,7 +45,7 @@ class Beam:
         self._loads = []
         self.add_load(load=loads)
 
-        self._symbeam = symBeam(
+        self._symbeam = SymBeam(
             length=self.length,
             elastic_modulus=self.elastic_modulus,
             second_moment=self.second_moment,
