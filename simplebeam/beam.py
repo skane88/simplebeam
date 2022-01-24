@@ -20,6 +20,7 @@ class Beam:
 
     _loads: list[Load]
     _restraints: list[Restraint]
+    _symbeam: Optional[SymBeam]
 
     def __init__(
         self,
@@ -51,7 +52,8 @@ class Beam:
         self._loads = []
         self.add_load(load=loads)
 
-        self._symbeam = self._build_symbeam()
+        self._boundary_variables = []
+        self._symbeam = None
 
     @property
     def solved(self):
@@ -260,11 +262,36 @@ class Beam:
             if restraint.dy:
                 beam.bc_deflection.append((restraint.position, 0))
 
-                boundary_variables.append(symbols(f"R{i}"))
+                bv_symbol = f"R{i}"
+
+                beam.apply_load(bv_symbol, restraint.position, order=-1)
+
+                boundary_variables.append(symbols(bv_symbol))
 
             if restraint.rz:
                 beam.bc_slope.append((restraint.position, 0))
 
-                boundary_variables.append(symbols(f"M{i}"))
+                bv_symbol = f"M{i}"
+
+                beam.apply_load(bv_symbol, restraint.position, order=-2)
+
+                boundary_variables.append(symbols(bv_symbol))
 
         self._boundary_variables = boundary_variables
+        self._symbeam = beam
+
+    def solve_beam(self):
+        """
+        Solve the underlying SymPy beam object.
+        """
+
+        if not self.solved:
+            # no need to redo the work if this was already successfully solved.
+            # does rely on people using the setters rather than the overwriting
+            # protected variables.
+
+            self._build_symbeam()  # build the SymPy beam in case there were changes from
+            # whatever was last created.
+
+            self._symbeam.solve_for_reaction_loads(*self._boundary_variables)
+            self._solved = True
