@@ -196,13 +196,11 @@ class Beam:
             for individual_load in load:
 
                 self.validate_load(individual_load)
-
                 self._loads.append(individual_load)
 
         else:
 
             self.validate_load(load)
-
             self._loads.append(load)
 
     def validate_load(self, load: Load, raise_exceptions: bool = True):
