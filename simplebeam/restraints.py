@@ -32,7 +32,8 @@ class Restraint:
         """
         Constructor for the restraint class.
 
-        :position: The position of the restraint.
+        :position: The position of the restraint. Must be between 0. and the length of
+            the beam that it will be applied to.
         :param dy: Is the beam restrained for translation in the y direction?
             True if fixed, False if free. Alternatively, use "f" or "r"
         :param rz: Is the beam restrained for rotation about the z axis?
