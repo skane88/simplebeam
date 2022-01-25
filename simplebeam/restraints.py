@@ -17,7 +17,7 @@ RESTRAINT_CODE = {
     (True, True): "ff",
     (True, False): "fr",
     (False, False): "rr",
-    (False, True): "",
+    (False, True): "rf",
 }
 
 
