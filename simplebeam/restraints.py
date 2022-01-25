@@ -6,18 +6,18 @@ from typing import Union, Optional
 
 from simplebeam.exceptions import RestraintError, RestraintPositionError
 
-VALID_CODES = {"f": True, "r": False}
+VALID_CODES = {"F": True, "R": False}
 RESTRAINT_TYPE = {
-    (True, True): "fixed",
-    (True, False): "pin",
-    (False, False): "free",
-    (False, True): "guide",
+    (True, True): "Fixed",
+    (True, False): "Pin",
+    (False, False): "Free",
+    (False, True): "Guide",
 }
 RESTRAINT_CODE = {
-    (True, True): "ff",
-    (True, False): "fr",
-    (False, False): "rr",
-    (False, True): "rf",
+    (True, True): "FF",
+    (True, False): "FR",
+    (False, False): "RR",
+    (False, True): "RF",
 }
 
 
@@ -47,7 +47,7 @@ class Restraint:
 
         if isinstance(dy, str):
 
-            if dy.lower() not in VALID_CODES:
+            if dy.upper() not in VALID_CODES:
                 raise RestraintError(
                     "Expected dy be either True or False, or part of "
                     + f"{repr(VALID_CODES.keys())}. Received dy = {dy}"
@@ -57,7 +57,7 @@ class Restraint:
 
         if isinstance(rz, str):
 
-            if rz.lower() not in VALID_CODES:
+            if rz.upper() not in VALID_CODES:
                 raise RestraintError(
                     "Expected rz be either True or False, or part of "
                     + f"{repr(VALID_CODES.keys())}. Received rz = {dy}"
@@ -92,7 +92,7 @@ class Restraint:
     @property
     def restraint_type(self):
         """
-        The restraint type ("fixed", "pin", "guide" or "free")
+        The restraint type ("Fixed", "Pin", "Guide" or "Free")
         """
 
         return RESTRAINT_TYPE[(self.dy, self.rz)]
@@ -100,7 +100,7 @@ class Restraint:
     @property
     def restraint_code(self):
         """
-        The restraint code ("ff", "rr", "fr" or "rf")
+        The restraint code ("FF", "RR", "FR" or "RF")
         """
 
         return RESTRAINT_CODE[(self.dy, self.rz)]
@@ -109,7 +109,7 @@ class Restraint:
     def short_name(self):
         """
         A short name for the restraint based on the restraint code + the position. E.g.
-        ff@5.0
+        FF@5.0
         """
 
         return self.restraint_code + "@" + str(self.position)
