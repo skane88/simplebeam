@@ -9,6 +9,18 @@ class SimpleBeamError(Exception):
     """
 
 
+class BeamError(SimpleBeamError):
+    """
+    Parent class for errors in the Beam classes.
+    """
+
+
+class BeamNotSolvedError(BeamError):
+    """
+    Error to raise if the beam has to be solved before requesting a property.
+    """
+
+
 class LoadError(SimpleBeamError):
     """
     Parent class for errors in the Load classes.
