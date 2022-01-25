@@ -197,10 +197,10 @@ class Beam:
         :param load: The Load object to add, or a list of Load objects.
         """
 
-        self._solved = False
-
         if load is None:
             return
+
+        self._solved = False
 
         if isinstance(load, list):
 
