@@ -7,8 +7,18 @@ from typing import Union, Optional
 from simplebeam.exceptions import RestraintError, RestraintPositionError
 
 VALID_CODES = {"f": True, "r": False}
-RESTRAINT_TYPE = {(True, True): "fixed", (True, False): "pin", (False, False): "free"}
-RESTRAINT_CODE = {(True, True): "ff", (True, False): "fr", (False, False): "rr"}
+RESTRAINT_TYPE = {
+    (True, True): "fixed",
+    (True, False): "pin",
+    (False, False): "free",
+    (False, True): "guide",
+}
+RESTRAINT_CODE = {
+    (True, True): "ff",
+    (True, False): "fr",
+    (False, False): "rr",
+    (False, True): "",
+}
 
 
 class Restraint:
@@ -81,7 +91,7 @@ class Restraint:
     @property
     def restraint_type(self):
         """
-        The restraint type ("fixed", "pin" or "free")
+        The restraint type ("fixed", "pin", "guide" or "free")
         """
 
         return RESTRAINT_TYPE[(self.dy, self.rz)]
@@ -89,7 +99,7 @@ class Restraint:
     @property
     def restraint_code(self):
         """
-        The restraint code ("ff", "fr" or "rr")
+        The restraint code ("ff", "rr", "fr" or "rf")
         """
 
         return RESTRAINT_CODE[(self.dy, self.rz)]
