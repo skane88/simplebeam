@@ -130,6 +130,8 @@ class Beam:
         if restraint is None:
             return
 
+        self._solved = False
+
         if isinstance(restraint, list):
             for individual_restraint in restraint:
                 self.validate_restraint(individual_restraint)
