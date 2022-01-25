@@ -106,6 +106,15 @@ class Restraint:
         return RESTRAINT_CODE[(self.dy, self.rz)]
 
     @property
+    def short_name(self):
+        """
+        A short name for the restraint based on the restraint code + the position. E.g.
+        ff@5.0
+        """
+
+        return self.restraint_code + "@" + str(self.position)
+
+    @property
     def ry_variable(self) -> Optional[str]:
         """
         Returns a variable name for the unknown reaction along the y axis that will

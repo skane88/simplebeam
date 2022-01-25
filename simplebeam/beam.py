@@ -307,3 +307,14 @@ class Beam:
 
         self._symbeam.solve_for_reaction_loads(*unknowns)
         self._solved = True
+
+    def __repr__(self):
+
+        restraints = [r.short_name for r in self.restraints]
+
+        return (
+            f"{type(self).__name__} "
+            + f"length = {self.length} "
+            + f"with restraints={repr(restraints)} "
+            + f"and {len(self.loads)} loads."
+        )
