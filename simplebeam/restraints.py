@@ -137,3 +137,36 @@ class Restraint:
             + f"{self.restraint_type} ({self.restraint_code}) "
             + f"at position={repr(self.position)}"
         )
+
+
+def pin(position) -> Restraint:
+    """
+    Return a pinned restraint.
+
+    :param position: The position of the restraint. Must be between 0. and the length of
+        the beam that it will be applied to.
+    """
+
+    return Restraint(position=position, dy=True, rz=False)
+
+
+def fixed(position) -> Restraint:
+    """
+    Return a fixed restraint.
+
+    :param position: The position of the restraint. Must be between 0. and the length of
+        the beam that it will be applied to.
+    """
+
+    return Restraint(position=position)
+
+
+def guide(position) -> Restraint:
+    """
+    Return a guide restraint.
+
+    :param position: The position of the restraint. Must be between 0. and the length of
+        the beam that it will be applied to.
+    """
+
+    return Restraint(position=position, dy=False, rz=True)
