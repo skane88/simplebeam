@@ -5,7 +5,7 @@ Basic Beam element class.
 from numbers import Number
 from typing import Union, Optional
 
-from sympy import symbols  # type: ignore
+from sympy import symbols, Symbol  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.loads import Load
@@ -281,6 +281,13 @@ class Beam:
 
         self._symbeam = beam
 
+    def _restraint_symbol(self, position, prefix: str) -> Symbol:
+        """
+        Returns a variable for the unknown reaction that will occur at position.
+        """
+
+        return symbols(prefix + "_" + str(position).replace(".", "_"))
+
     def solve_beam(self):
         """
         Solve the underlying SymPy beam object.
@@ -300,10 +307,10 @@ class Beam:
         for restraint in self.restraints:
 
             if restraint.dy:
-                unknowns.append(symbols(restraint.ry_variable))
+                unknowns.append(self._restraint_symbol(restraint.position, prefix="R"))
 
             if restraint.rz:
-                unknowns.append(symbols(restraint.mz_variable))
+                unknowns.append(self._restraint_symbol(restraint.position, prefix="M"))
 
         self._symbeam.solve_for_reaction_loads(*unknowns)
         self._solved = True
