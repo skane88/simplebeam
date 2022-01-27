@@ -10,7 +10,11 @@ from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: igno
 
 from simplebeam.loads import Load
 from simplebeam.restraints import Restraint
-from simplebeam.exceptions import LoadPositionError, RestraintPositionError
+from simplebeam.exceptions import (
+    LoadPositionError,
+    RestraintPositionError,
+    BeamNotSolvedError,
+)
 
 
 class Beam:
@@ -271,22 +275,21 @@ class Beam:
         for restraint in self.restraints:
             if restraint.dy:
                 beam.bc_deflection.append((restraint.position, 0))
-
-                beam.apply_load(restraint.ry_variable, restraint.position, order=-1)
+                beam.apply_load(
+                    _restraint_symbol(position=restraint.position, prefix="R"),
+                    restraint.position,
+                    order=-1,
+                )
 
             if restraint.rz:
                 beam.bc_slope.append((restraint.position, 0))
-
-                beam.apply_load(restraint.mz_variable, restraint.position, order=-2)
+                beam.apply_load(
+                    _restraint_symbol(position=restraint.position, prefix="M"),
+                    restraint.position,
+                    order=-2,
+                )
 
         self._symbeam = beam
-
-    def _restraint_symbol(self, position, prefix: str) -> Symbol:
-        """
-        Returns a variable for the unknown reaction that will occur at position.
-        """
-
-        return symbols(prefix + "_" + str(position).replace(".", "_"))
 
     def solve_beam(self):
         """
@@ -307,13 +310,55 @@ class Beam:
         for restraint in self.restraints:
 
             if restraint.dy:
-                unknowns.append(self._restraint_symbol(restraint.position, prefix="R"))
+                unknowns.append(
+                    _restraint_symbol(position=restraint.position, prefix="R")
+                )
 
             if restraint.rz:
-                unknowns.append(self._restraint_symbol(restraint.position, prefix="M"))
+                unknowns.append(
+                    _restraint_symbol(position=restraint.position, prefix="M")
+                )
 
         self._symbeam.solve_for_reaction_loads(*unknowns)
         self._solved = True
+
+    @property
+    def reactions(self) -> dict[int, dict[str, float]]:
+        """
+        The reactions on the beam. Returned as a dictionary of the form:
+
+        {
+            index of load starting from left:   {
+                'R': Vertical reaction (if any) or None
+                'M': Moment reaction (if any) or None
+            }
+        }
+
+        """
+
+        if not self.solved:
+            raise BeamNotSolvedError("Beam not yet solved")
+        if self._symbeam is None:
+            raise BeamNotSolvedError("Beam not yet solved")
+
+        reactions = self._symbeam.reaction_loads
+        ret_val = {}
+
+        for i, rest in enumerate(self.restraints):
+
+            ret_val[i] = {
+                "R": reactions[_restraint_symbol(position=rest.position, prefix="R")]
+                if rest.dy
+                else None
+            }
+
+            ret_val[i]["M"] = (
+                reactions[_restraint_symbol(position=rest.position, prefix="M")]
+                if rest.rz
+                else None
+            )
+
+        return ret_val
 
     def __repr__(self):
 
@@ -325,3 +370,14 @@ class Beam:
             + f"with restraints={repr(restraints)} "
             + f"and {len(self.loads)} loads."
         )
+
+
+def _restraint_symbol(*, position, prefix: str) -> Symbol:
+    """
+    Returns a variable for the unknown reaction that will occur at a position.
+
+    :param: The position of the unknown.
+    :prefix: Nominally "R" for a force and "M" for a moment reaction.
+    """
+
+    return symbols(prefix + "_" + str(position).replace(".", "_"))
