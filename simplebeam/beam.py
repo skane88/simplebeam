@@ -291,7 +291,7 @@ class Beam:
 
         self._symbeam = beam
 
-    def solve_beam(self):
+    def solve(self):
         """
         Solve the underlying SymPy beam object.
         """
