@@ -2,7 +2,7 @@
 File for the Restraint class.
 """
 
-from typing import Union, Optional
+from typing import Union
 
 from simplebeam.exceptions import RestraintError, RestraintPositionError
 

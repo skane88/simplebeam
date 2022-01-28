@@ -3,18 +3,18 @@ Basic Beam element class.
 """
 
 from numbers import Number
-from typing import Union, Optional
+from typing import Optional, Union
 
-from sympy import symbols, Symbol  # type: ignore
+from sympy import Symbol, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
-from simplebeam.loads import Load
-from simplebeam.restraints import Restraint
 from simplebeam.exceptions import (
+    BeamNotSolvedError,
     LoadPositionError,
     RestraintPositionError,
-    BeamNotSolvedError,
 )
+from simplebeam.loads import Load
+from simplebeam.restraints import Restraint
 
 
 class Beam:
