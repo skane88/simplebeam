@@ -63,3 +63,36 @@ def test_add_restraint():
 
     assert not beam.solved
     assert beam
+
+
+def test_solve():
+    """
+    Very basic test of the beam to see if it can be solved.
+
+    NOTE: This does not check the correctness of the answers, only that the solution
+    works.
+    """
+
+    beam = simplebeam.Beam(
+        elastic_modulus=200e9,
+        second_moment=1.0,
+        length=5.0,
+        restraints=None,
+        loads=None,
+    )
+
+    r1 = simplebeam.Restraint(position=0.0)
+    r2 = simplebeam.Restraint(position=5.0)
+
+    beam.add_restraint(restraint=[r1, r2])
+
+    l1 = simplebeam.Load(order="point", magnitude=-1, start=2.5)
+
+    beam.add_load(l1)
+
+    assert not beam.solved
+
+    beam.solve()
+
+    assert beam.solved
+    assert beam
