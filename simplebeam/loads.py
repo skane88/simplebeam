@@ -129,3 +129,41 @@ class Load:
             + f"with magnitude={repr(self.magnitude)} "
             + position
         )
+
+
+def point(*, magnitude, position) -> Load:
+    """
+    Generate a point load.
+
+    :param magnitude: The magnitude of the point load.
+    :param position: The location of the point load.
+    :return: A Load object representing the point load.
+    """
+
+    return Load(order="point", magnitude=magnitude, start=position, end=None)
+
+
+def moment(*, magnitude, position) -> Load:
+    """
+    Generate a moment load.
+
+    :param magnitude: The magnitude of the moment load.
+    :param position: The location of the moment load.
+    :return: A Load object representing the moment load.
+    """
+
+    return Load(order="moment", magnitude=magnitude, start=position, end=None)
+
+
+def udl(*, magnitude, start=None, end=None) -> Load:
+    """
+    Generate a UDL load.
+
+    :param magnitude: The magnitude of the UDL load.
+    :param start: The starting point of the UDL. If None, starts at the beginning of the
+        beam.
+    :param end: The ending point of the UDL. If None, continues to the end of the beam.
+    :return: A Load objectt representing the UDL load.
+    """
+
+    return Load(order="udl", magnitude=magnitude, start=start, end=end)
