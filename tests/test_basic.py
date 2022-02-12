@@ -2,6 +2,8 @@
 Initial test file.
 """
 
+from math import isclose
+
 import simplebeam
 
 
@@ -96,3 +98,34 @@ def test_solve():
 
     assert beam.solved
     assert beam
+
+
+def test_reactions():
+    """
+    Basic test that reactions are returned as expected.
+    """
+
+    beam = simplebeam.Beam(
+        elastic_modulus=200e9,
+        second_moment=1.0,
+        length=5.0,
+        restraints=None,
+        loads=None,
+    )
+
+    r1 = simplebeam.Restraint(position=0.0)
+    r2 = simplebeam.Restraint(position=5.0)
+
+    beam.add_restraint(restraint=[r1, r2])
+
+    l1 = simplebeam.Load(order="point", magnitude=-1, start=2.5)
+
+    beam.add_load(l1)
+
+    beam.solve()
+
+    expected = {0: {"R": 0.5, "M": -0.625}, 1: {"R": 0.5, "M": 0.625}}
+
+    for support in (0, 1):
+        for react in ("R", "M"):
+            assert isclose(beam.reactions[support][react], expected[support][react])
