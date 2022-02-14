@@ -5,6 +5,7 @@ Basic Beam element class.
 from numbers import Number
 from typing import Optional, Union
 
+import numpy as np
 from sympy import Symbol, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
@@ -359,6 +360,60 @@ class Beam:
             )
 
         return ret_val
+
+    def _get_x_points(self, min_points: int = 25, tolerance: float = 1e6) -> np.ndarray:
+        """
+        Determine the points along the beam required to accurately represent the moment
+        and shear forces along the beam. Works by determining a baseline no. of points
+        and then adding in points located at or either side of singularities etc.
+
+        :param min_points: The minimum no. of points to return.
+        :param tolerance: The distance either side of a singularity to insert a point, as
+            a fraction of the total length.
+        :return:
+        """
+
+        singularity_tolerance = self.length / tolerance
+
+        base_points = np.linspace(0, self.length, min_points)
+
+        for restraint in self.restraints:
+            base_points = np.append(
+                base_points,
+                [
+                    restraint.position - singularity_tolerance,
+                    restraint.position,
+                    restraint.position + singularity_tolerance,
+                ],
+            )
+
+        for load in self.loads:
+
+            base_points = np.append(
+                base_points,
+                [
+                    load.start - singularity_tolerance,
+                    load.start,
+                    load.start + singularity_tolerance,
+                ],
+            )
+
+            if load.end is not None:
+                base_points = np.append(
+                    base_points,
+                    [
+                        load.end - singularity_tolerance,
+                        load.end,
+                        load.end + singularity_tolerance,
+                    ],
+                )
+
+        points = np.unique(base_points)
+
+        points = np.delete(points, np.where(points < 0))
+        points = np.delete(points, np.where(points > self.length))
+
+        return points
 
     def __repr__(self):
 
