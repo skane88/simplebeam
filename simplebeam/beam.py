@@ -380,4 +380,4 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     :prefix: Nominally "R" for a force and "M" for a moment reaction.
     """
 
-    return symbols(prefix + "_" + str(position).replace(".", "_"))
+    return symbols(f"{prefix}_" + str(position).replace(".", "_"))
