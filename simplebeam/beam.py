@@ -368,8 +368,8 @@ class Beam:
         and then adding in points located at or either side of singularities etc.
 
         :param min_points: The minimum no. of points to return.
-        :param tolerance: The distance either side of a singularity to insert a point, as
-            a fraction of the total length.
+        :param tolerance: The distance either side of a singularity to insert a point,
+            as a fraction of the total length.
         :return:
         """
 
