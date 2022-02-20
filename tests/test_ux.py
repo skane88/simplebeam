@@ -14,10 +14,14 @@ def test_basic():
 
     length = 5.0
 
+    # first create some restraints for the beam.
     r1 = pin(position=0)
     r2 = guide(position=length)
+
+    # next create a load.
     l1 = point(magnitude=1.0, position=length / 2)
 
+    # now set up the beam.
     beam = Beam(
         elastic_modulus=200e9,
         second_moment=1.0,
@@ -26,18 +30,11 @@ def test_basic():
         loads=l1,
     )
 
+    # now the beam is set up, we need to solve it.
     beam.solve()
 
-    expected_reactions = {0: {"R": -1.0, "M": None}, 1: {"R": None, "M": 2.5}}
-
-    for support in (0, 1):
-        for react in ("R", "M"):
-
-            reaction = beam.reactions[support][react]
-
-            if reaction is not None:
-
-                assert isclose(reaction, expected_reactions[support][react])
-
-            else:
-                assert reaction == expected_reactions[support][react]
+    # extracting reactions from the beam.
+    assert isclose(beam.reactions[0]["R"], -1.0)
+    assert beam.reactions[0]["M"] is None
+    assert beam.reactions[1]["R"] is None
+    assert isclose(beam.reactions[1]["M"], 2.5)
