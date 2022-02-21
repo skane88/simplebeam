@@ -509,31 +509,12 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
             sample(p, new_point, depth + 1)
             sample(new_point, q, depth + 1)
 
-        # Sample ten points if complex values are encountered
-        # at both ends. If there is a real value in between, then
-        # sample those points further.
-        elif p[1] is None and q[1] is None:
-
-            xarray = np.linspace(p[0], q[0], 10)
-            yarray = list(map(f, xarray))  # TODO: fix the use of f here.
-
-            if not all(y is None for y in yarray):
-                for i in range(len(yarray) - 1):
-                    if not (yarray[i] is None and yarray[i + 1] is None):
-                        sample(
-                            [xarray[i], yarray[i]],
-                            [xarray[i + 1], yarray[i + 1]],
-                            depth + 1,
-                        )
+        # got rid of the block of code here and in the next elif that handled complex
+        # numbers because that should not be an issue in the beam equations.
 
         # Sample further if one of the end points in None (i.e. a
         # complex value) or the three points are not almost collinear.
-        elif (
-            p[1] is None
-            or q[1] is None
-            or new_point[1] is None
-            or not flat(p, new_point, q)
-        ):
+        elif not flat(p, new_point, q):
             sample(p, new_point, depth + 1)
             sample(new_point, q, depth + 1)
         else:
