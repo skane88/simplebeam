@@ -6,7 +6,7 @@ from numbers import Number
 from typing import Optional, Union
 
 import numpy as np
-from sympy import Symbol, symbols  # type: ignore
+from sympy import Symbol, symbols, lambdify  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.exceptions import (
@@ -436,3 +436,114 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     """
 
     return symbols(f"{prefix}_" + str(position).replace(".", "_"))
+
+
+def get_points(expr, start, end, max_depth: int = 12):
+    """ Return lists of coordinates for plotting. Depending on the
+    `adaptive` option, this function will either use an adaptive algorithm
+    or it will uniformly sample the expression over the provided range.
+    Returns
+    =======
+        x: list
+            List of x-coordinates
+        y: list
+            List of y-coordinates
+    Explanation
+    ===========
+    The adaptive sampling is done by recursively checking if three
+    points are almost collinear. If they are not collinear, then more
+    points are added between those points.
+    References
+    ==========
+    .. [1] Adaptive polygonal approximation of parametric curves,
+           Luiz Henrique de Figueiredo.
+    """
+
+    x_coords = []
+    y_coords = []
+
+    x = symbols("x")
+
+    # f = lambdify([x], expr)
+
+    def flat(x, y, z, eps=1e-3):
+        """
+        Checks whether three points are almost collinear
+        """
+
+        vector_a = (x - y).astype(np.float64)
+        vector_b = (z - y).astype(np.float64)
+
+        dot_product = np.dot(vector_a, vector_b)
+
+        vector_a_norm = np.linalg.norm(vector_a)
+        vector_b_norm = np.linalg.norm(vector_b)
+
+        cos_theta = dot_product / (vector_a_norm * vector_b_norm)
+
+        return abs(cos_theta + 1) < eps
+
+    def sample(p, q, depth):
+        """
+        Samples recursively if three points are almost collinear.
+        For depth < 6, points are added irrespective of whether they
+        satisfy the collinearity condition or not. The maximum depth
+        allowed is 12.
+        """
+        # Randomly sample to avoid aliasing.
+        random = 0.45 + np.random.rand() * 0.1
+
+        xnew = p[0] + random * (q[0] - p[0])
+
+        ynew = expr.subs(x, xnew).evalf()
+        new_point = np.array([xnew, ynew])
+
+        # Maximum depth
+        if depth > max_depth:
+            x_coords.append(q[0])
+            y_coords.append(q[1])
+
+        # Sample irrespective of whether the line is flat till the
+        # depth of 6. We are not using linspace to avoid aliasing.
+        elif depth < 6:
+            sample(p, new_point, depth + 1)
+            sample(new_point, q, depth + 1)
+
+        # Sample ten points if complex values are encountered
+        # at both ends. If there is a real value in between, then
+        # sample those points further.
+        elif p[1] is None and q[1] is None:
+
+            xarray = np.linspace(p[0], q[0], 10)
+            yarray = list(map(f, xarray))
+
+            if not all(y is None for y in yarray):
+                for i in range(len(yarray) - 1):
+                    if not (yarray[i] is None and yarray[i + 1] is None):
+                        sample(
+                            [xarray[i], yarray[i]],
+                            [xarray[i + 1], yarray[i + 1]],
+                            depth + 1,
+                        )
+
+        # Sample further if one of the end points in None (i.e. a
+        # complex value) or the three points are not almost collinear.
+        elif (
+            p[1] is None
+            or q[1] is None
+            or new_point[1] is None
+            or not flat(p, new_point, q)
+        ):
+            sample(p, new_point, depth + 1)
+            sample(new_point, q, depth + 1)
+        else:
+            x_coords.append(q[0])
+            y_coords.append(q[1])
+
+    f_start = expr.subs(x, start).evalf()
+    f_end = expr.subs(x, end).evalf()
+    x_coords.append(start)
+    y_coords.append(f_start)
+    sample(np.array([start, f_start]), np.array([end, f_end]), 0)
+
+    return (x_coords, y_coords)
