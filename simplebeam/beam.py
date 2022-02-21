@@ -6,7 +6,7 @@ from numbers import Number
 from typing import Optional, Union
 
 import numpy as np
-from sympy import Symbol, symbols, lambdify  # type: ignore
+from sympy import Symbol, lambdify, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.exceptions import (
@@ -439,7 +439,7 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
 
 
 def get_points(expr, start, end, max_depth: int = 12):
-    """ Return lists of coordinates for plotting. Depending on the
+    """Return lists of coordinates for plotting. Depending on the
     `adaptive` option, this function will either use an adaptive algorithm
     or it will uniformly sample the expression over the provided range.
     Returns
@@ -464,7 +464,7 @@ def get_points(expr, start, end, max_depth: int = 12):
 
     x = symbols("x")
 
-    # f = lambdify([x], expr)
+    f = lambda xval: expr.subs(x, xval).evalf()
 
     def flat(x, y, z, eps=1e-3):
         """
@@ -495,7 +495,7 @@ def get_points(expr, start, end, max_depth: int = 12):
 
         xnew = p[0] + random * (q[0] - p[0])
 
-        ynew = expr.subs(x, xnew).evalf()
+        ynew = f(xnew)
         new_point = np.array([xnew, ynew])
 
         # Maximum depth
@@ -540,8 +540,8 @@ def get_points(expr, start, end, max_depth: int = 12):
             x_coords.append(q[0])
             y_coords.append(q[1])
 
-    f_start = expr.subs(x, start).evalf()
-    f_end = expr.subs(x, end).evalf()
+    f_start = f(start)
+    f_end = f(end)
     x_coords.append(start)
     y_coords.append(f_start)
     sample(np.array([start, f_start]), np.array([end, f_end]), 0)
