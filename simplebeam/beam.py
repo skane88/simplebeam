@@ -438,7 +438,7 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     return symbols(f"{prefix}_" + str(position).replace(".", "_"))
 
 
-def get_points(expr, start, end, max_depth: int = 12):
+def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
     """Return lists of coordinates for plotting. Depending on the
     `adaptive` option, this function will either use an adaptive algorithm
     or it will uniformly sample the expression over the provided range.
@@ -504,8 +504,8 @@ def get_points(expr, start, end, max_depth: int = 12):
             y_coords.append(q[1])
 
         # Sample irrespective of whether the line is flat till the
-        # depth of 6. We are not using linspace to avoid aliasing.
-        elif depth < 6:
+        # minimum depth. We are not using linspace to avoid aliasing.
+        elif depth < min_depth:
             sample(p, new_point, depth + 1)
             sample(new_point, q, depth + 1)
 
