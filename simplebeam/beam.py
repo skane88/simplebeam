@@ -438,6 +438,7 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     return symbols(f"{prefix}_" + str(position).replace(".", "_"))
 
 
+# TODO: update docstring.
 def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
     """Return lists of coordinates for plotting. Depending on the
     `adaptive` option, this function will either use an adaptive algorithm
