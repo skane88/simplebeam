@@ -498,25 +498,15 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
         ynew = f(xnew)
         new_point = np.array([xnew, ynew])
 
-        # Maximum depth
-        if depth > max_depth:
-            x_coords.append(q[0])
-            y_coords.append(q[1])
-
-        # Sample irrespective of whether the line is flat till the
+        # Sample if the points are not collinear, or if the depth is less than the
         # minimum depth. We are not using linspace to avoid aliasing.
-        elif depth < min_depth:
+        if depth <= max_depth and (not flat(p, new_point, q) or depth < min_depth):
             sample(p, new_point, depth + 1)
             sample(new_point, q, depth + 1)
 
         # got rid of the block of code here and in the next elif that handled complex
         # numbers because that should not be an issue in the beam equations.
 
-        # Sample further if one of the end points in None (i.e. a
-        # complex value) or the three points are not almost collinear.
-        elif not flat(p, new_point, q):
-            sample(p, new_point, depth + 1)
-            sample(new_point, q, depth + 1)
         else:
             x_coords.append(q[0])
             y_coords.append(q[1])
