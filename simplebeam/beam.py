@@ -463,9 +463,17 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
     x_coords = []
     y_coords = []
 
-    x = symbols("x")
+    x_sym = symbols("x")
 
-    f = lambda xval: expr.subs(x, xval).evalf()
+    def func(x_val):
+        """
+        A closure around the sympy expression that allows it to be evaluated to float
+        at a point.
+        :param x_val: The x-point at which the expression is evaluated.
+        :return:
+        """
+
+        return expr.subs(x_sym, x_val).evalf()
 
     def flat(x, y, z, eps=1e-3):
         """
@@ -496,7 +504,7 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
 
         xnew = p[0] + random * (q[0] - p[0])
 
-        ynew = f(xnew)
+        ynew = func(xnew)
         new_point = np.array([xnew, ynew])
 
         # Sample if the points are not collinear, or if the depth is less than the
@@ -512,8 +520,8 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
             x_coords.append(q[0])
             y_coords.append(q[1])
 
-    f_start = f(start)
-    f_end = f(end)
+    f_start = func(start)
+    f_end = func(end)
     x_coords.append(start)
     y_coords.append(f_start)
     sample(np.array([start, f_start]), np.array([end, f_end]), 0)
