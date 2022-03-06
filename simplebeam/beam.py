@@ -438,26 +438,27 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     return symbols(f"{prefix}_" + str(position).replace(".", "_"))
 
 
-# TODO: update docstring.
 def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
-    """Return lists of coordinates for plotting. Depending on the
-    `adaptive` option, this function will either use an adaptive algorithm
-    or it will uniformly sample the expression over the provided range.
-    Returns
-    =======
-        x: list
-            List of x-coordinates
-        y: list
-            List of y-coordinates
-    Explanation
-    ===========
-    The adaptive sampling is done by recursively checking if three
-    points are almost collinear. If they are not collinear, then more
-    points are added between those points.
-    References
-    ==========
-    .. [1] Adaptive polygonal approximation of parametric curves,
-           Luiz Henrique de Figueiredo.
+    """
+    Evaluates an expression across a range, using a recursive algorithm to try
+    and identify discontinuities etc. by checking if 3x points are collinear
+    within a tolerance. If not, additional points are added in between until the
+    tolerance is met or the maximum recursive depth is reached.
+
+    Based on code from SymPy's plotting functions, simplified down as we do not need
+    to handle complex numbers etc.
+
+    See https://github.com/sympy/sympy or
+    https://www.sympy.org/en/index.html for original code.
+
+    :param expr: the expression to evaluate.
+    :param start: the start of the range to evaluate.
+    :param end: the end of the range to evaluate.
+    :param min_depth: the minimum depth of the recursive algorithm. Essentially sets
+        a minimum level of quality of the approximation to the function.
+    :param max_depth: the maximum depth of the recursive algorithm. Ensures the
+        algorithm does not run forever. Set a higher number for better quality.
+    :returns: A list of x co-ordinates and a list of y co-ordinates.
     """
 
     x_coords = []
@@ -470,7 +471,6 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
         A closure around the sympy expression that allows it to be evaluated to float
         at a point.
         :param x_val: The x-point at which the expression is evaluated.
-        :return:
         """
 
         return expr.subs(x_sym, x_val).evalf()
@@ -478,6 +478,11 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
     def flat(x, y, z, eps=1e-3):
         """
         Checks whether three points are almost collinear
+
+        :param x: the first point.
+        :param y: the second point.
+        :param z: the third point.
+        :param eps: The tolerance for flatness.
         """
 
         vector_a = (x - y).astype(np.float64)
@@ -495,9 +500,13 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
     def sample(p, q, depth):
         """
         Samples recursively if three points are almost collinear.
-        For depth < 6, points are added irrespective of whether they
+        For depth < min_depth, points are added irrespective of whether they
         satisfy the collinearity condition or not. The maximum depth
-        allowed is 12.
+        allowed is max_depth.
+
+        :param p: The first point to sample between.
+        :param q: The second point to sample between.
+        :param depth: The current depth of the recursive algorithm.
         """
         # Randomly sample to avoid aliasing.
         random = 0.45 + np.random.rand() * 0.1
