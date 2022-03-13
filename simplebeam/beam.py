@@ -475,28 +475,6 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
 
         return expr.subs(x_sym, x_val).evalf()
 
-    def flat(x, y, z, eps=1e-3):
-        """
-        Checks whether three points are almost collinear
-
-        :param x: the first point.
-        :param y: the second point.
-        :param z: the third point.
-        :param eps: The tolerance for flatness.
-        """
-
-        vector_a = (x - y).astype(np.float64)
-        vector_b = (z - y).astype(np.float64)
-
-        dot_product = np.dot(vector_a, vector_b)
-
-        vector_a_norm = np.linalg.norm(vector_a)
-        vector_b_norm = np.linalg.norm(vector_b)
-
-        cos_theta = dot_product / (vector_a_norm * vector_b_norm)
-
-        return abs(cos_theta + 1) < eps
-
     def sample(p, q, depth):
         """
         Samples recursively if three points are almost collinear.
@@ -536,3 +514,74 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
     sample(np.array([start, f_start]), np.array([end, f_end]), 0)
 
     return (x_coords, y_coords)
+
+
+def flat(x, y, z, eps=1e-3):
+    """
+    Checks whether three points are almost collinear
+
+    :param x: the first point.
+    :param y: the second point.
+    :param z: the third point.
+    :param eps: The tolerance for flatness.
+    """
+
+    vector_a = (x - y).astype(np.float64)
+    vector_b = (z - y).astype(np.float64)
+
+    dot_product = np.dot(vector_a, vector_b)
+
+    vector_a_norm = np.linalg.norm(vector_a)
+    vector_b_norm = np.linalg.norm(vector_b)
+
+    cos_theta = dot_product / (vector_a_norm * vector_b_norm)
+
+    return abs(cos_theta + 1) < eps
+
+
+def clean_points(x_coords, y_coords):
+    """
+    Take a list of points in and clean out any points that form a straight line so that
+    only the end of each straight segment is kept.
+
+    :param x_coords: The x-coordinates.
+    :param y_coords: The y-coordinates.
+    :return: x_coord, y_coord. Note that the input lists are edited in place.
+        If you want to keep the original lists then make sure to deep copy
+        the coordinates first.
+    """
+
+    if len(x_coords) < 3:
+        return x_coords, y_coords
+
+    i1, i2, i3 = 0, 1, 2
+
+    cleaned = False
+
+    while not cleaned:
+        # now go through the points and clean out any points that are on
+        # the middle of a straight line.
+
+        p1 = np.array([x_coords[i1], y_coords[i1]])
+        p2 = np.array([x_coords[i2], y_coords[i2]])
+        p3 = np.array([x_coords[i3], y_coords[i3]])
+
+        if flat(x=p1, y=p2, z=p3):
+            # if flat, then we can remove the middle point.
+
+            del x_coords[i2]
+            del y_coords[i2]
+        else:
+            # if not, we need to update the 3x indexes.
+            i1 += 1
+            i2 += 1
+            i3 += 1
+
+        # now we need to check to see if we are now at the end of the list
+
+        if i3 == len(x_coords):
+            # if i3 is beyond the end of the list then we have cleaned the whole list.
+
+            cleaned = True
+
+    return x_coords, y_coords
