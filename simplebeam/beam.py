@@ -12,6 +12,7 @@ from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: igno
 from simplebeam.exceptions import (
     BeamNotSolvedError,
     LoadPositionError,
+    PointNotOnBeamError,
     RestraintPositionError,
 )
 from simplebeam.loads import Load
@@ -361,15 +362,25 @@ class Beam:
 
         return ret_val
 
-    def shear_at_point(self, point):
+    def shear_at_point(self, position):
         """
         Determine the shear at a point along the beam.
 
-        :param point: the point to determine the shear at, between 0 and length.
+        :param position: the point to determine the shear at, between 0 and length.
         """
 
-        if point < 0:
-            raise
+        if position < 0 or position > self.length:
+            raise PointNotOnBeamError("Requested shear result is not on the beam.")
+
+        if not self.solved:
+            raise BeamNotSolvedError("Beam not yet solved")
+        if self._symbeam is None:
+            raise BeamNotSolvedError("Beam not yet solved")
+
+        shear_eq = self._symbeam.shear_force()
+        symbol = self._symbeam.variable
+
+        return shear_eq.subs(symbol, position).evalf()
 
     def __repr__(self):
 

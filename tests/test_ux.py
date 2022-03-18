@@ -40,3 +40,5 @@ def test_basic():
     assert isclose(beam.reactions[1]["M"], 2.5)
 
     # extracting shear from the beam.
+    assert isclose(beam.shear_at_point(position=1.0), 1.0)
+    assert isclose(beam.shear_at_point(position=4.0), 0.0)
