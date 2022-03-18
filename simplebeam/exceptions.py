@@ -21,7 +21,7 @@ class BeamNotSolvedError(BeamError):
     """
 
 
-class PointNotOnBeam(BeamError):
+class PointNotOnBeamError(BeamError):
     """
     Error to raise if a result is requested at a point that is not on the beam.
     """
