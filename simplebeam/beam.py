@@ -361,6 +361,16 @@ class Beam:
 
         return ret_val
 
+    def shear_at_point(self, point):
+        """
+        Determine the shear at a point along the beam.
+
+        :param point: the point to determine the shear at, between 0 and length.
+        """
+
+        if point < 0:
+            raise
+
     def __repr__(self):
 
         restraints = [r.short_name for r in self.restraints]

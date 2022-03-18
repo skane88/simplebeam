@@ -21,6 +21,12 @@ class BeamNotSolvedError(BeamError):
     """
 
 
+class PointNotOnBeam(BeamError):
+    """
+    Error to raise if a result is requested at a point that is not on the beam.
+    """
+
+
 class LoadError(SimpleBeamError):
     """
     Parent class for errors in the Load classes.
