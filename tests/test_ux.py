@@ -38,3 +38,5 @@ def test_basic():
     assert beam.reactions[0]["M"] is None
     assert beam.reactions[1]["R"] is None
     assert isclose(beam.reactions[1]["M"], 2.5)
+
+    # extracting shear from the beam.
