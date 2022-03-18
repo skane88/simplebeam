@@ -19,6 +19,9 @@ from simplebeam.loads import Load
 from simplebeam.restraints import Restraint
 
 
+BEAM_NOT_SOLVED_WARNING = "Beam not yet solved."
+
+
 class Beam:
     """
     A basic Beam element class.
@@ -339,9 +342,9 @@ class Beam:
         """
 
         if not self.solved:
-            raise BeamNotSolvedError("Beam not yet solved")
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
         if self._symbeam is None:
-            raise BeamNotSolvedError("Beam not yet solved")
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
 
         reactions = self._symbeam.reaction_loads
         ret_val = {}
@@ -373,9 +376,9 @@ class Beam:
             raise PointNotOnBeamError("Requested shear result is not on the beam.")
 
         if not self.solved:
-            raise BeamNotSolvedError("Beam not yet solved")
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
         if self._symbeam is None:
-            raise BeamNotSolvedError("Beam not yet solved")
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
 
         shear_eq = self._symbeam.shear_force()
         symbol = self._symbeam.variable
