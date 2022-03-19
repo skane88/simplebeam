@@ -18,7 +18,6 @@ from simplebeam.exceptions import (
 from simplebeam.loads import Load
 from simplebeam.restraints import Restraint
 
-
 BEAM_NOT_SOLVED_WARNING = "Beam not yet solved."
 
 
