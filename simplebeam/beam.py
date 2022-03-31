@@ -407,7 +407,7 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     return symbols(f"{prefix}_" + str(position).replace(".", "_"))
 
 
-def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
+def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 15):
     """
     Evaluates an expression across a range, using a recursive algorithm to try
     and identify discontinuities etc. by checking if 3x points are collinear
@@ -485,7 +485,7 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 12):
     return (x_coords, y_coords)
 
 
-def flat(x, y, z, eps=1e-3):
+def flat(x, y, z, eps=1e-6):
     """
     Checks whether three points are almost collinear
 
