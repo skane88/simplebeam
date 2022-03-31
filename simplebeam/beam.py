@@ -384,6 +384,26 @@ class Beam:
 
         return shear_eq.subs(symbol, position).evalf()
 
+    def moment_at_point(self, position):
+        """
+        Determine the moment at a point along the beam.
+
+        :param position: the point to determine the moment at, between 0 and length.
+        """
+
+        if position < 0 or position > self.length:
+            raise PointNotOnBeamError("Requested shear result is not on the beam.")
+
+        if not self.solved:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+        if self._symbeam is None:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+
+        shear_eq = self._symbeam.bending_moment()
+        symbol = self._symbeam.variable
+
+        return shear_eq.subs(symbol, position).evalf()
+
     def __repr__(self):
 
         restraints = [r.short_name for r in self.restraints]
