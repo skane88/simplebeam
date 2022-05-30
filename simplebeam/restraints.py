@@ -112,7 +112,7 @@ class Restraint:
         FF@5.0
         """
 
-        return self.restraint_code + "@" + str(self.position)
+        return f"{self.restraint_code}@{str(self.position)}"
 
     @property
     def position(self):
