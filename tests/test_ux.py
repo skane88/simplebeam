@@ -51,5 +51,7 @@ def test_basic():
     assert isclose(beam.moment_at_point(position=length), 2.5)
 
     # extracting slope from the beam
+    assert False
 
     # extracting deflection from the beam.
+    assert False

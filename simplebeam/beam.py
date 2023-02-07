@@ -382,7 +382,7 @@ class Beam:
         """
 
         if position < 0 or position > self.length:
-            raise PointNotOnBeamError("Requested shear result is not on the beam.")
+            raise PointNotOnBeamError("Requested moment result is not on the beam.")
 
         if not self.solved:
             raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
@@ -399,6 +399,58 @@ class Beam:
         symbol = self._symbeam.variable
 
         return moment_eq.subs(symbol, position).evalf()
+
+    def slope_at_point(self, position):
+        """
+        Determine the slope at a point along the beam.
+
+        :param position: the point to determine the slope at, between 0 and length.
+        """
+
+        if position < 0 or position > self.length:
+            raise PointNotOnBeamError("Requested slope result is not on the beam.")
+
+        if not self.solved:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+        if self._symbeam is None:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+
+        if position == self.length:
+            position = math.nextafter(position, 0)
+
+        if position == 0:
+            position = math.nextafter(position, self.length)
+
+        slope_eq = self._symbeam.slope()
+        symbol = self._symbeam.variable
+
+        return slope_eq.subs(symbol, position).evalf()
+
+    def deflection_at_point(self, position):
+        """
+        Determine the deflection at a point along the beam.
+
+        :param position: the point to determine the deflection at, between 0 and length.
+        """
+
+        if position < 0 or position > self.length:
+            raise PointNotOnBeamError("Requested deflection result is not on the beam.")
+
+        if not self.solved:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+        if self._symbeam is None:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+
+        if position == self.length:
+            position = math.nextafter(position, 0)
+
+        if position == 0:
+            position = math.nextafter(position, self.length)
+
+        deflection_eq = self._symbeam.deflection()
+        symbol = self._symbeam.variable
+
+        return deflection_eq.subs(symbol, position).evalf()
 
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
