@@ -161,7 +161,7 @@ def udl(*, magnitude, start=None, end=None) -> Load:
     :param start: The starting point of the UDL. If None, starts at the beginning of the
         beam.
     :param end: The ending point of the UDL. If None, continues to the end of the beam.
-    :return: A Load objectt representing the UDL load.
+    :return: A Load object representing the UDL load.
     """
 
     return Load(order="udl", magnitude=magnitude, start=start, end=end)
