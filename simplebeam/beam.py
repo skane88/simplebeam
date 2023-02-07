@@ -3,7 +3,7 @@ Basic Beam element class.
 """
 
 from numbers import Number
-from typing import Optional, Union
+from typing import Optional
 
 import numpy as np
 from sympy import Symbol, lambdify, symbols  # type: ignore
@@ -36,8 +36,8 @@ class Beam:
         elastic_modulus: Number,
         second_moment: Number,
         length: Number,
-        restraints: Union[list[Restraint], Restraint] = None,
-        loads: Union[list[Load], Load] = None,
+        restraints: list[Restraint] | Restraint | None = None,
+        loads: list[Load] | Load | None = None,
     ):
         """
 
@@ -119,12 +119,12 @@ class Beam:
         return self._restraints
 
     @restraints.setter
-    def restraints(self, restraints: Union[list[Restraint], Restraint] = None):
+    def restraints(self, restraints: list[Restraint] | Restraint | None = None):
         self._solved = False
         self._restraints = []
         self.add_restraint(restraint=restraints)
 
-    def add_restraint(self, *, restraint: Union[list[Restraint], Restraint] = None):
+    def add_restraint(self, *, restraint: list[Restraint] | Restraint | None = None):
         """
         Add a restraint to the Beam.
 
@@ -187,12 +187,12 @@ class Beam:
         return self._loads
 
     @loads.setter
-    def loads(self, loads: Union[list[Load], Load] = None):
+    def loads(self, loads: list[Load] | Load | None = None):
         self._solved = False
         self._loads = []
         self.add_load(load=loads)
 
-    def add_load(self, load: Union[list[Load], Load] = None):
+    def add_load(self, load: list[Load] | Load | None = None):
         """
         Add a load onto the beam.
 

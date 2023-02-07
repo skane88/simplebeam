@@ -2,8 +2,6 @@
 File for the Restraint class.
 """
 
-from typing import Union
-
 from simplebeam.exceptions import RestraintError, RestraintPositionError
 
 VALID_CODES = {"F": True, "R": False}
@@ -26,9 +24,7 @@ class Restraint:
     An object to represent a restraint for the beam.
     """
 
-    def __init__(
-        self, position, dy: Union[str, bool] = True, rz: Union[str, bool] = True
-    ):
+    def __init__(self, position, dy: str | bool = True, rz: str | bool = True):
         """
         Constructor for the restraint class.
 
