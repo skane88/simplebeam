@@ -152,7 +152,7 @@ class Beam:
         Validate a restraint is correct. Currently only checks that it is located on the
         beam but additional checks may be added.
 
-        :param restraint: The restraint to valicate
+        :param restraint: The restraint to validate
         :param raise_exceptions: If True, raise an exception on discovering an invalid
             restraint.
         :return: True if valid.
@@ -218,7 +218,7 @@ class Beam:
         Validate a load is correct. Currently only checks that it is located on the
         beam but additional checks may be added.
 
-        :param load: The load to valicate
+        :param load: The load to validate
         :param raise_exceptions: If True, raise an exception on discovering an invalid
             load.
         :return: True if valid.
@@ -467,7 +467,7 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 16):
         new_point = np.array([xnew, ynew])
 
         # Sample if the points are not collinear, or if the depth is less than the
-        # minimum depth. We are not using linspace to avoid aliasing.
+        # minimum depth. We are not using np.linspace to avoid aliasing.
         if depth <= max_depth and (not flat(p, new_point, q) or depth < min_depth):
             sample(p, new_point, depth + 1)
             sample(new_point, q, depth + 1)
@@ -485,7 +485,7 @@ def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 16):
     y_coords.append(f_start)
     sample(np.array([start, f_start]), np.array([end, f_end]), 0)
 
-    return (x_coords, y_coords)
+    return x_coords, y_coords
 
 
 def flat(x, y, z, eps=1e-7):
@@ -532,7 +532,7 @@ def clean_points(x_coords, y_coords):
 
     while not cleaned:
         # now go through the points and clean out any points that are on
-        # the middle of a straight line.
+        # a straight line.
 
         p1 = np.array([x_coords[i1], y_coords[i1]])
         p2 = np.array([x_coords[i2], y_coords[i2]])
