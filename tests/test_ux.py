@@ -42,3 +42,12 @@ def test_basic():
     # extracting shear from the beam.
     assert isclose(beam.shear_at_point(position=1.0), 1.0)
     assert isclose(beam.shear_at_point(position=4.0), 0.0)
+
+    # extracting moment from the beam.
+    assert isclose(beam.moment_at_point(position=0), 0, abs_tol=1e-9)
+    assert isclose(beam.moment_at_point(position=length / 2), 2.5)
+    assert isclose(beam.moment_at_point(position=length), 2.5)
+
+    # extracting slope from the beam
+
+    # extracting deflection from the beam.
