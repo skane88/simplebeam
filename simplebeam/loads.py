@@ -79,7 +79,6 @@ class Load:
 
     @order.setter
     def order(self, order):
-
         self._order = ORDERS[order.lower()] if isinstance(order, str) else order
 
     @property
@@ -117,7 +116,6 @@ class Load:
         return LOAD_TYPES_BY_ORDER[self.order]
 
     def __repr__(self):
-
         if self.order < 0:
             position = f"at position={repr(self.start)}"
         else:

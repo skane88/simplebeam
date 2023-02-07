@@ -80,7 +80,6 @@ class Beam:
 
     @elastic_modulus.setter
     def elastic_modulus(self, elastic_modulus):
-
         self._solved = False
         self._elastic_modulus = elastic_modulus
 
@@ -94,7 +93,6 @@ class Beam:
 
     @second_moment.setter
     def second_moment(self, second_moment):
-
         self._solved = False
         self._second_moment = second_moment
 
@@ -108,7 +106,6 @@ class Beam:
 
     @length.setter
     def length(self, length):
-
         self._solved = False
         self._length = length
 
@@ -123,7 +120,6 @@ class Beam:
 
     @restraints.setter
     def restraints(self, restraints: Union[list[Restraint], Restraint] = None):
-
         self._solved = False
         self._restraints = []
         self.add_restraint(restraint=restraints)
@@ -146,7 +142,6 @@ class Beam:
                 self._restraints.append(individual_restraint)
 
         else:
-
             self.validate_restraint(restraint)
             self._restraints.append(restraint)
 
@@ -164,7 +159,6 @@ class Beam:
         """
 
         if restraint.position < 0 or restraint.position > self.length:
-
             if raise_exceptions:
                 raise RestraintPositionError(
                     "Restraint position must be on the beam "
@@ -175,7 +169,6 @@ class Beam:
             return False
 
         for i, each_restraint in enumerate(self.restraints):
-
             if restraint.position == each_restraint.position:
                 raise RestraintPositionError(
                     "Restraints must be in different locations. "
@@ -195,7 +188,6 @@ class Beam:
 
     @loads.setter
     def loads(self, loads: Union[list[Load], Load] = None):
-
         self._solved = False
         self._loads = []
         self.add_load(load=loads)
@@ -213,14 +205,11 @@ class Beam:
         self._solved = False
 
         if isinstance(load, list):
-
             for individual_load in load:
-
                 self.validate_load(individual_load)
                 self._loads.append(individual_load)
 
         else:
-
             self.validate_load(load)
             self._loads.append(load)
 
@@ -236,7 +225,6 @@ class Beam:
         """
 
         if load.start is not None and (load.start < 0 or load.start > self.length):
-
             if raise_exceptions:
                 raise LoadPositionError(
                     "Load start position must be on the beam "
@@ -246,7 +234,6 @@ class Beam:
             return False
 
         if load.end is not None and load.end < 0:
-
             if raise_exceptions:
                 raise LoadPositionError(
                     "Load end position must be greater than 0. "
@@ -271,7 +258,6 @@ class Beam:
         self._restraints.sort(key=lambda x: x.position)
 
         for load in self.loads:
-
             beam.apply_load(
                 value=load.magnitude, start=load.start, order=load.order, end=load.end
             )
@@ -312,7 +298,6 @@ class Beam:
         unknowns = []
 
         for restraint in self.restraints:
-
             if restraint.dy:
                 unknowns.append(
                     _restraint_symbol(position=restraint.position, prefix="R")
@@ -349,7 +334,6 @@ class Beam:
         ret_val = {}
 
         for i, rest in enumerate(self.restraints):
-
             ret_val[i] = {
                 "R": reactions[_restraint_symbol(position=rest.position, prefix="R")]
                 if rest.dy
@@ -405,7 +389,6 @@ class Beam:
         return shear_eq.subs(symbol, position).evalf()
 
     def __repr__(self):
-
         restraints = [r.short_name for r in self.restraints]
 
         return (

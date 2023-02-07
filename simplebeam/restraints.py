@@ -46,7 +46,6 @@ class Restraint:
             )
 
         if isinstance(dy, str):
-
             if dy.upper() not in VALID_CODES:
                 raise RestraintError(
                     "Expected dy be either True or False, or part of "
@@ -56,7 +55,6 @@ class Restraint:
             dy = VALID_CODES[dy]
 
         if isinstance(rz, str):
-
             if rz.upper() not in VALID_CODES:
                 raise RestraintError(
                     "Expected rz be either True or False, or part of "
