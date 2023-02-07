@@ -1,11 +1,11 @@
 """
-File contains a custom exception heirarchy.
+File contains a custom exception hierarchy.
 """
 
 
 class SimpleBeamError(Exception):
     """
-    Parent class in an exception heirarchy for the simplebeam project.
+    Parent class in an exception hierarchy for the simplebeam project.
     """
 
 
