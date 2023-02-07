@@ -363,6 +363,12 @@ class Beam:
         if self._symbeam is None:
             raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
 
+        if position == self.length:
+            position = math.nextafter(position, 0)
+
+        if position == 0:
+            position = math.nextafter(position, self.length)
+
         shear_eq = self._symbeam.shear_force()
         symbol = self._symbeam.variable
 
