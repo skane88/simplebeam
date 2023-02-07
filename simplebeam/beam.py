@@ -1,7 +1,7 @@
 """
 Basic Beam element class.
 """
-
+import math
 from numbers import Number
 from typing import Optional
 
@@ -383,10 +383,16 @@ class Beam:
         if self._symbeam is None:
             raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
 
-        shear_eq = self._symbeam.bending_moment()
+        if position == self.length:
+            position = math.nextafter(position, 0)
+
+        if position == 0:
+            position = math.nextafter(position, self.length)
+
+        moment_eq = self._symbeam.bending_moment()
         symbol = self._symbeam.variable
 
-        return shear_eq.subs(symbol, position).evalf()
+        return moment_eq.subs(symbol, position).evalf()
 
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
