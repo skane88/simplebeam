@@ -459,7 +459,8 @@ class Beam:
             f"{type(self).__name__} "
             + f"length = {self.length} "
             + f"with restraints={repr(restraints)} "
-            + f"and {len(self.loads)} loads."
+            + f"and {len(self.loads)} loads. "
+            + f"Solved={self.solved}."
         )
 
 
