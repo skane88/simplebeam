@@ -680,3 +680,36 @@ def fix_ended(
         loads=loads,
         restraints=[r1, r2],
     )
+
+
+def propped_cantilever(
+    length,
+    elastic_modulus=200e9,
+    second_moment=1.0,
+    loads: Load | list[Load] | None = None,
+    prop_on_right: bool = True,
+):
+    """
+    Helper function to create a propped cantilever beam.
+
+    :param length: the length of the beam to create.
+    :param elastic_modulus: the elastic modulus of the beam.
+    :param second_moment: the second moment of inertia of the beam.
+    :param loads: the loads to apply.
+    :param prop_on_right: Which end is the propped end?
+    """
+
+    if prop_on_right:
+        r1 = fixed(0)
+        r2 = pin(length)
+    else:
+        r1 = pin(0)
+        r2 = fixed(length)
+
+    return Beam(
+        length=length,
+        elastic_modulus=elastic_modulus,
+        second_moment=second_moment,
+        loads=loads,
+        restraints=[r1, r2],
+    )
