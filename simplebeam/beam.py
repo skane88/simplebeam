@@ -16,7 +16,7 @@ from simplebeam.exceptions import (
     RestraintPositionError,
 )
 from simplebeam.loads import Load
-from simplebeam.restraints import Restraint
+from simplebeam.restraints import Restraint, pin
 
 BEAM_NOT_SOLVED_WARNING = "Beam not yet solved."
 
@@ -622,3 +622,32 @@ def clean_points(x_coords, y_coords):
             cleaned = True
 
     return x_coords, y_coords
+
+
+def simple(
+    length,
+    elastic_modulus=200e9,
+    second_moment=1.0,
+    loads: Load | list[Load] | None = None,
+):
+    """
+    Helper function to create a simply supported beam.
+
+    Creates a beam with a pin support at each end.
+
+    :param length: the length of the beam to create.
+    :param elastic_modulus: the elastic modulus of the beam.
+    :param second_moment: the second moment of inertia of the beam.
+    :param loads: the loads to apply.
+    """
+
+    r1 = pin(0)
+    r2 = pin(length)
+
+    return Beam(
+        length=length,
+        elastic_modulus=elastic_modulus,
+        second_moment=second_moment,
+        loads=loads,
+        restraints=[r1, r2],
+    )
