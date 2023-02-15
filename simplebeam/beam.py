@@ -38,8 +38,10 @@ class Beam:
         length: Number,
         restraints: list[Restraint] | Restraint | None = None,
         loads: list[Load] | Load | None = None,
+        solve: bool = True,
     ):
         """
+        Initialise a Beam object.
 
         :param elastic_modulus: The elastic modulus.
         :param second_moment: The second moment of inertia.
@@ -47,6 +49,7 @@ class Beam:
         :param restraints: Any restraints applied to the beam.
         :param loads: Any loads applied to the beam. Can be applied later with
             self.add_load.
+        :param solve: If possible to solve, do so.
         """
 
         self._solved = False
@@ -61,6 +64,9 @@ class Beam:
         self.add_load(load=loads)
 
         self._symbeam = None
+
+        if solve and self.solveable:
+            self.solve()
 
     @property
     def solved(self):
@@ -280,6 +286,30 @@ class Beam:
                 )
 
         self._symbeam = beam
+
+    @property
+    def solveable(self):
+        """
+        Is the beam solveable in principle?
+
+        NOTE: this does not address beams that are mechanisms, or have other sources of
+        singularities. It only checks that the user has provided the types of
+        information req'd.
+        """
+
+        if self.restraints is None or len(self.restraints) == 0:
+            return False
+
+        if self.loads is None or len(self.loads) == 0:
+            return False
+
+        return not any(
+            [
+                self.elastic_modulus is None,
+                self.second_moment is None,
+                self.length is None,
+            ]
+        )
 
     def solve(self):
         """
