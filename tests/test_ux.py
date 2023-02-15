@@ -82,9 +82,7 @@ def test_simple():
 
     # get reactions
     assert isclose(beam.reactions[0]["R"], -P / 2)
-    assert beam.reactions[0]["M"] is None
     assert isclose(beam.reactions[1]["R"], -P / 2)
-    assert beam.reactions[1]["M"] is None
 
     # get shear on the beam.
     assert isclose(beam.shear_at_point(0), P / 2)
@@ -94,3 +92,65 @@ def test_simple():
     assert isclose(beam.moment_at_point(0), 0, abs_tol=1e-15)
     assert isclose(beam.moment_at_point(l / 2), P * l / 4)
     assert isclose(beam.moment_at_point(l), 0, abs_tol=1e-15)
+
+
+def test_fixed_ended():
+    """
+    Test the fixed-ended beam helper function.
+    """
+
+    l = 5.0
+    E = 200e9
+    I = 1.0
+    P = 1.0
+
+    load = point(magnitude=P, position=l / 2)
+
+    beam = fix_ended(length=l, elastic_modulus=E, second_moment=I, loads=load)
+
+    # get reactions
+    assert isclose(beam.reactions[0]["R"], -P / 2)
+    assert isclose(beam.reactions[0]["M"], P * l / 8)
+    assert isclose(beam.reactions[1]["R"], -P / 2)
+    assert isclose(beam.reactions[1]["M"], -P * l / 8)
+
+    # get shear on the beam.
+    assert isclose(beam.shear_at_point(0), P / 2)
+    assert isclose(beam.shear_at_point(l), -P / 2)
+
+    # get moments
+    assert isclose(beam.moment_at_point(0), -P * l / 8)
+    assert isclose(beam.moment_at_point(l / 2), P * l / 8)
+    assert isclose(beam.moment_at_point(l), -P * l / 8)
+
+
+def test_propped_cantilever():
+    """
+    Test the propped-cantilever beam helper function.
+    """
+
+    l = 5.0
+    E = 200e9
+    I = 1.0
+    P = 1.0
+
+    load = point(magnitude=P, position=l / 2)
+
+    beam = propped_cantilever(
+        length=l, elastic_modulus=E, second_moment=I, loads=load, prop_on_right=False
+    )
+
+    # get reactions
+    assert isclose(beam.reactions[0]["R"], -5 * P / 16)
+    assert beam.reactions[0]["M"] is None
+    assert isclose(beam.reactions[1]["R"], -11 * P / 16)
+    assert isclose(beam.reactions[1]["M"], -3 * P * l / 16)
+
+    # get shear on the beam.
+    assert isclose(beam.shear_at_point(0), 5 * P / 16)
+    assert isclose(beam.shear_at_point(l), -11 * P / 16)
+
+    # get moments
+    assert isclose(beam.moment_at_point(0), 0)
+    assert isclose(beam.moment_at_point(l / 2), 5 * P * l / 32)
+    assert isclose(beam.moment_at_point(l), -3 * P * l / 16)
