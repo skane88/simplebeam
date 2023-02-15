@@ -606,17 +606,23 @@ def flat(x, y, z, eps=1e-7):
     return abs(cos_theta + 1) < eps
 
 
-def clean_points(x_coords, y_coords):
+def clean_points(x_coords, y_coords, x_to_keep=None):
     """
     Take a list of points in and clean out any points that form a straight line so that
     only the end of each straight segment is kept.
 
     :param x_coords: The x-coordinates.
     :param y_coords: The y-coordinates.
+    :param x_to_keep: A list of x-co-ordinates that should be kept (if any).
     :return: x_coord, y_coord. Note that the input lists are edited in place.
         If you want to keep the original lists then make sure to deep copy
         the coordinates first.
     """
+
+    if x_to_keep is None:
+        x_to_keep = [x_coords[0]]
+
+    x_to_keep = np.array(x_to_keep)
 
     if len(x_coords) < 3:
         return x_coords, y_coords
@@ -633,13 +639,15 @@ def clean_points(x_coords, y_coords):
         p2 = np.array([x_coords[i2], y_coords[i2]])
         p3 = np.array([x_coords[i3], y_coords[i3]])
 
-        if flat(x=p1, y=p2, z=p3):
+        keep = np.any(np.isclose(x_to_keep, x_coords[i2]))
+
+        if not keep and flat(x=p1, y=p2, z=p3):
             # if flat, then we can remove the middle point.
 
             del x_coords[i2]
             del y_coords[i2]
         else:
-            # if not, we need to update the 3x indexes.
+            # if not, we need to update the 3x indexes to the next 3x points.
             i1 += 1
             i2 += 1
             i3 += 1
