@@ -3,7 +3,6 @@ Basic Beam element class.
 """
 import math
 from numbers import Number
-from typing import Optional
 
 import numpy as np
 from sympy import Symbol, lambdify, symbols  # type: ignore
@@ -28,7 +27,7 @@ class Beam:
 
     _loads: list[Load]
     _restraints: list[Restraint]
-    _symbeam: Optional[SymBeam]
+    _symbeam: SymBeam | None
 
     def __init__(
         self,
