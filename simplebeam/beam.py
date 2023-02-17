@@ -271,7 +271,7 @@ class Beam:
             if restraint.dy:
                 beam.bc_deflection.append((restraint.position, 0))
                 beam.apply_load(
-                    _restraint_symbol(position=restraint.position, prefix="R"),
+                    _restraint_symbol(position=restraint.position, prefix="F"),
                     restraint.position,
                     order=-1,
                 )
@@ -329,7 +329,7 @@ class Beam:
         for restraint in self.restraints:
             if restraint.dy:
                 unknowns.append(
-                    _restraint_symbol(position=restraint.position, prefix="R")
+                    _restraint_symbol(position=restraint.position, prefix="F")
                 )
 
             if restraint.rz:
@@ -364,7 +364,7 @@ class Beam:
 
         for i, rest in enumerate(self.restraints):
             ret_val[i] = {
-                "R": reactions[_restraint_symbol(position=rest.position, prefix="R")]
+                "F": reactions[_restraint_symbol(position=rest.position, prefix="F")]
                 if rest.dy
                 else None
             }
@@ -498,7 +498,7 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     Returns a variable for the unknown reaction that will occur at a position.
 
     :param: The position of the unknown.
-    :prefix: Nominally "R" for a force and "M" for a moment reaction.
+    :prefix: Nominally "F" for a force and "M" for a moment reaction.
     """
 
     return symbols(f"{prefix}_" + str(position).replace(".", "_"))

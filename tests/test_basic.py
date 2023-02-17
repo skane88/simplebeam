@@ -124,8 +124,8 @@ def test_reactions():
 
     beam.solve()
 
-    expected = {0: {"R": 0.5, "M": -0.625}, 1: {"R": 0.5, "M": 0.625}}
+    expected = {0: {"F": 0.5, "M": -0.625}, 1: {"F": 0.5, "M": 0.625}}
 
     for support in (0, 1):
-        for react in ("R", "M"):
+        for react in ("F", "M"):
             assert isclose(beam.reactions[support][react], expected[support][react])

@@ -49,9 +49,9 @@ def test_basic():
     beam.solve()
 
     # extracting reactions from the beam.
-    assert isclose(beam.reactions[0]["R"], -P)
+    assert isclose(beam.reactions[0]["F"], -P)
     assert beam.reactions[0]["M"] is None
-    assert beam.reactions[1]["R"] is None
+    assert beam.reactions[1]["F"] is None
     assert isclose(beam.reactions[1]["M"], P * l / 2)
 
     # extracting shear from the beam.
@@ -81,8 +81,8 @@ def test_simple():
     beam = simple(length=l, elastic_modulus=E, second_moment=I, loads=load)
 
     # get reactions
-    assert isclose(beam.reactions[0]["R"], -P / 2)
-    assert isclose(beam.reactions[1]["R"], -P / 2)
+    assert isclose(beam.reactions[0]["F"], -P / 2)
+    assert isclose(beam.reactions[1]["F"], -P / 2)
 
     # get shear on the beam.
     assert isclose(beam.shear_at_point(0), P / 2)
@@ -109,9 +109,9 @@ def test_fixed_ended():
     beam = fix_ended(length=l, elastic_modulus=E, second_moment=I, loads=load)
 
     # get reactions
-    assert isclose(beam.reactions[0]["R"], -P / 2)
+    assert isclose(beam.reactions[0]["F"], -P / 2)
     assert isclose(beam.reactions[0]["M"], P * l / 8)
-    assert isclose(beam.reactions[1]["R"], -P / 2)
+    assert isclose(beam.reactions[1]["F"], -P / 2)
     assert isclose(beam.reactions[1]["M"], -P * l / 8)
 
     # get shear on the beam.
@@ -141,9 +141,9 @@ def test_propped_cantilever():
     )
 
     # get reactions
-    assert isclose(beam.reactions[0]["R"], -5 * P / 16)
+    assert isclose(beam.reactions[0]["F"], -5 * P / 16)
     assert beam.reactions[0]["M"] is None
-    assert isclose(beam.reactions[1]["R"], -11 * P / 16)
+    assert isclose(beam.reactions[1]["F"], -11 * P / 16)
     assert isclose(beam.reactions[1]["M"], -3 * P * l / 16)
 
     # get shear on the beam.
