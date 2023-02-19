@@ -724,7 +724,7 @@ def propped_cantilever(
     elastic_modulus=200e9,
     second_moment=1.0,
     loads: Load | list[Load] | None = None,
-    prop_on_right: bool = True,
+    fixed_left: bool = True,
 ):
     """
     Helper function to create a propped cantilever beam.
@@ -733,10 +733,10 @@ def propped_cantilever(
     :param elastic_modulus: the elastic modulus of the beam.
     :param second_moment: the second moment of inertia of the beam.
     :param loads: the loads to apply.
-    :param prop_on_right: Which end is the propped end?
+    :param fixed_left: Which end is the fixed end?
     """
 
-    if prop_on_right:
+    if fixed_left:
         r1 = fixed(0)
         r2 = pin(length)
     else:
@@ -766,7 +766,7 @@ def cantilever(
     :param elastic_modulus: the elastic modulus of the beam.
     :param second_moment: the second moment of inertia of the beam.
     :param loads: the loads to apply.
-    :param prop_on_right: Which end is the propped end?
+    :param fixed_left: Which end is the fixed end?
     """
 
     if fixed_left:

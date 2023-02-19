@@ -138,7 +138,7 @@ def test_propped_cantilever():
     load = point(magnitude=P, position=l / 2)
 
     beam = propped_cantilever(
-        length=l, elastic_modulus=E, second_moment=I, loads=load, prop_on_right=False
+        length=l, elastic_modulus=E, second_moment=I, loads=load, fixed_left=False
     )
 
     # get reactions
