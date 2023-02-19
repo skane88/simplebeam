@@ -6,6 +6,7 @@ from math import isclose
 
 from simplebeam import (
     Beam,
+    cantilever,
     fix_ended,
     fixed,
     guide,
@@ -154,3 +155,33 @@ def test_propped_cantilever():
     assert isclose(beam.moment_at_point(0), 0)
     assert isclose(beam.moment_at_point(l / 2), 5 * P * l / 32)
     assert isclose(beam.moment_at_point(l), -3 * P * l / 16)
+
+
+def test_cantilever():
+    """
+    Test the cantilever helper method.
+    """
+
+    l = 5.0
+    E = 200e9
+    I = 1.0
+    P = 1.0
+
+    load = point(magnitude=P, position=l / 2)
+
+    beam = cantilever(
+        length=l, elastic_modulus=E, second_moment=I, loads=load, fixed_left=False
+    )
+
+    # get reactions
+    assert isclose(beam.reactions[0]["F"], -P)
+    assert isclose(beam.reactions[0]["M"], -P * l / 2)
+
+    # get shear on the beam.
+    assert isclose(beam.shear_at_point(0), 0)
+    assert isclose(beam.shear_at_point(l), -P)
+
+    # get moments
+    assert isclose(beam.moment_at_point(0), 0)
+    assert isclose(beam.moment_at_point(l / 2), 0)
+    assert isclose(beam.moment_at_point(l), -P * l / 2)
