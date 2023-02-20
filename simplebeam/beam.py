@@ -769,10 +769,7 @@ def cantilever(
     :param fixed_left: Which end is the fixed end?
     """
 
-    if fixed_left:
-        r1 = fixed(0)
-    else:
-        r1 = fixed(length)
+    r1 = fixed(0) if fixed_left else fixed(length)
 
     return Beam(
         length=length,
