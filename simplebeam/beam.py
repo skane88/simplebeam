@@ -481,6 +481,52 @@ class Beam:
 
         return deflection_eq.subs(symbol, position).evalf()
 
+    def key_positions(self) -> list[float]:
+        """
+        Return a list containing key points along the length of a beam. These are:
+
+        * The start & end of a beam.
+        * The location of any loads or restraints that cause discontinuities in the
+            Shear, moment, slope or deflection curves.
+        """
+
+        def offset_points(x: float) -> set[float]:
+            """
+            Helper function to build points to add ot the set of points to return.
+            """
+
+            ret: set[float] = set()
+
+            if x == 0:
+                ret.add(math.nextafter(0, self.length))
+
+            elif x == self.length:
+                ret.add(math.nextafter(self.length, 0))
+
+            else:
+                ret.add(math.nextafter(x, 0))
+                ret.add(math.nextafter(x, self.length))
+
+            return ret
+
+        # first get the start and end of the beam.
+        points: set[float] = {
+            math.nextafter(0, self.length),
+            math.nextafter(self.length, 0),
+        }
+
+        for r in self.restraints:
+            points = points | offset_points(r.position)
+
+        for load in self.loads:
+            if (x := load.start) is not None:
+                points = points | offset_points(x)
+
+            if (x := load.end) is not None:
+                points = points | offset_points(x)
+
+        return sorted(list(points))
+
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
 
