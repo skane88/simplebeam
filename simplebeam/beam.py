@@ -22,6 +22,10 @@ BEAM_NOT_SOLVED_WARNING = "Beam not yet solved."
 
 
 class ResultType(Enum):
+    """
+    Create an Enum type for the different results that can be generated.
+    """
+
     SHEAR = "shear"
     MOMENT = "moment"
     SLOPE = "slope"
@@ -503,6 +507,48 @@ class Beam:
                 points = points | offset_points(x)
 
         return sorted(list(points))
+
+    def _result_curve(self, result_type: ResultType) -> tuple[list[float], list[float]]:
+        """
+        Create a series of x, y points along a result set.
+
+        :param result_type: The result type to query.
+        """
+
+        if result_type == result_type.SHEAR:
+            eq = self._symbeam.shear_force()  # type: ignore
+        elif result_type == result_type.MOMENT:
+            eq = self._symbeam.bending_moment()  # type: ignore
+        elif result_type == result_type.SLOPE:
+            eq = self._symbeam.slope()  # type: ignore
+        else:
+            eq = self._symbeam.deflection()  # type: ignore
+
+        symbol = self._symbeam.variable  # type: ignore
+
+        x, y = get_points(expr=eq, start=0, end=self.length)
+
+        # next make sure that we have the key positions covered
+
+        x_key = self.key_positions()
+
+        for xk in x_key:
+            if xk not in x:
+                x.append(xk)
+                y.append(eq.subs(symbol, xk).evalf())
+
+        xy = sorted(zip(x, y), key=lambda x: x[0])
+        x, y = (list(p) for p in zip(*xy))
+
+        x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=x_key)
+
+        return x, y
+
+    def shear_curve(self) -> tuple[list[float], list[float]]:
+        """
+        Generate a list of x, y points that define the shear curve.
+        """
+        return self._result_curve(result_type=ResultType.SHEAR)
 
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
