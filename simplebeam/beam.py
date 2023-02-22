@@ -2,6 +2,7 @@
 Basic Beam element class.
 """
 import math
+from enum import Enum
 from numbers import Number
 
 import numpy as np
@@ -18,6 +19,13 @@ from simplebeam.loads import Load
 from simplebeam.restraints import Restraint, fixed, pin
 
 BEAM_NOT_SOLVED_WARNING = "Beam not yet solved."
+
+
+class ResultType(Enum):
+    SHEAR = "shear"
+    MOMENT = "moment"
+    SLOPE = "slope"
+    DEFLECTION = "deflection"
 
 
 class Beam:
@@ -377,15 +385,16 @@ class Beam:
 
         return ret_val
 
-    def shear_at_point(self, position):
+    def _result_at_point(self, position, result_type: ResultType):
         """
-        Determine the shear at a point along the beam.
-
-        :param position: the point to determine the shear at, between 0 and length.
+        Determine the results at a point along the beam. THis is a helper method for the
+        public methods for each result type (shear, moment, slope & deflection).
         """
 
         if position < 0 or position > self.length:
-            raise PointNotOnBeamError("Requested shear result is not on the beam.")
+            raise PointNotOnBeamError(
+                f"Requested {result_type} result is not on the beam."
+            )
 
         if not self.solved:
             raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
@@ -398,10 +407,27 @@ class Beam:
         if position == 0:
             position = math.nextafter(position, self.length)
 
-        shear_eq = self._symbeam.shear_force()
         symbol = self._symbeam.variable
 
-        return shear_eq.subs(symbol, position).evalf()
+        if result_type == result_type.SHEAR:
+            eq = self._symbeam.shear_force()
+        elif result_type == result_type.MOMENT:
+            eq = self._symbeam.bending_moment()
+        elif result_type == result_type.SLOPE:
+            eq = self._symbeam.slope()
+        else:
+            eq = self._symbeam.deflection()
+
+        return eq.subs(symbol, position).evalf()
+
+    def shear_at_point(self, position):
+        """
+        Determine the shear at a point along the beam.
+
+        :param position: the point to determine the shear at, between 0 and length.
+        """
+
+        return self._result_at_point(position=position, result_type=ResultType.SHEAR)
 
     def moment_at_point(self, position):
         """
@@ -410,24 +436,7 @@ class Beam:
         :param position: the point to determine the moment at, between 0 and length.
         """
 
-        if position < 0 or position > self.length:
-            raise PointNotOnBeamError("Requested moment result is not on the beam.")
-
-        if not self.solved:
-            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
-        if self._symbeam is None:
-            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
-
-        if position == self.length:
-            position = math.nextafter(position, 0)
-
-        if position == 0:
-            position = math.nextafter(position, self.length)
-
-        moment_eq = self._symbeam.bending_moment()
-        symbol = self._symbeam.variable
-
-        return moment_eq.subs(symbol, position).evalf()
+        return self._result_at_point(position=position, result_type=ResultType.MOMENT)
 
     def slope_at_point(self, position):
         """
@@ -436,24 +445,7 @@ class Beam:
         :param position: the point to determine the slope at, between 0 and length.
         """
 
-        if position < 0 or position > self.length:
-            raise PointNotOnBeamError("Requested slope result is not on the beam.")
-
-        if not self.solved:
-            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
-        if self._symbeam is None:
-            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
-
-        if position == self.length:
-            position = math.nextafter(position, 0)
-
-        if position == 0:
-            position = math.nextafter(position, self.length)
-
-        slope_eq = self._symbeam.slope()
-        symbol = self._symbeam.variable
-
-        return slope_eq.subs(symbol, position).evalf()
+        return self._result_at_point(position=position, result_type=ResultType.SLOPE)
 
     def deflection_at_point(self, position):
         """
@@ -462,24 +454,9 @@ class Beam:
         :param position: the point to determine the deflection at, between 0 and length.
         """
 
-        if position < 0 or position > self.length:
-            raise PointNotOnBeamError("Requested deflection result is not on the beam.")
-
-        if not self.solved:
-            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
-        if self._symbeam is None:
-            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
-
-        if position == self.length:
-            position = math.nextafter(position, 0)
-
-        if position == 0:
-            position = math.nextafter(position, self.length)
-
-        deflection_eq = self._symbeam.deflection()
-        symbol = self._symbeam.variable
-
-        return deflection_eq.subs(symbol, position).evalf()
+        return self._result_at_point(
+            position=position, result_type=ResultType.DEFLECTION
+        )
 
     def key_positions(self) -> list[float]:
         """
