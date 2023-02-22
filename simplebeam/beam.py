@@ -542,6 +542,14 @@ class Beam:
 
         x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=x_key)
 
+        if y[0] != 0:
+            x = [0.0] + x
+            y = [0.0] + y
+
+        if x[-1] != self.length or y[-1] != 0:
+            x = x + [0.0]
+            y = y + [0.0]
+
         return x, y
 
     def shear_curve(self) -> tuple[list[float], list[float]]:
