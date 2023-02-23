@@ -37,6 +37,8 @@ class Beam:
     A basic Beam element class.
     """
 
+    # pylint: disable=R0904
+
     _loads: list[Load]
     _restraints: list[Restraint]
     _symbeam: SymBeam | None
