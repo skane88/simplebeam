@@ -560,6 +560,24 @@ class Beam:
         """
         return self._result_curve(result_type=ResultType.SHEAR)
 
+    def moment_curve(self) -> tuple[list[float], list[float]]:
+        """
+        Generate a list of x, y points that define the moment curve.
+        """
+        return self._result_curve(result_type=ResultType.MOMENT)
+
+    def slope_curve(self) -> tuple[list[float], list[float]]:
+        """
+        Generate a list of x, y points that define the slope curve.
+        """
+        return self._result_curve(result_type=ResultType.SLOPE)
+
+    def deflection_curve(self) -> tuple[list[float], list[float]]:
+        """
+        Generate a list of x, y points that define the deflection curve.
+        """
+        return self._result_curve(result_type=ResultType.DEFLECTION)
+
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
 
