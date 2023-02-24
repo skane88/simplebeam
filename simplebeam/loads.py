@@ -165,3 +165,29 @@ def udl(*, magnitude, start=None, end=None) -> Load:
     """
 
     return Load(order="udl", magnitude=magnitude, start=start, end=end)
+
+
+def triangular(*, magnitude, load_length, start=None) -> Load:
+    """
+    Generate a triangular load.
+
+    :param magnitude: The peak magnitude of the UDL load.
+    :param start: The starting point of the UDL. If None, starts at the beginning of the
+        beam.
+    :param length: The length of the UDL load to apply.
+        Note that start + load_length must be less than the length of the beam.
+    :return: A Load object representing the UDL load.
+    """
+
+    # note that the length of the load is required so that the slope of the ramp load
+    # can be determined - sympy uses the slope of the load, not the peak magnitude
+    # to determine the ramp load.
+
+    if start is None:
+        start = 0
+
+    end = start + load_length
+
+    slope = magnitude / load_length
+
+    return Load(order="ramp", magnitude=slope, start=start, end=end)
