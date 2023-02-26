@@ -174,7 +174,7 @@ def triangular(*, magnitude, load_length, start=None) -> Load:
     :param magnitude: The peak magnitude of the UDL load.
     :param start: The starting point of the UDL. If None, starts at the beginning of the
         beam.
-    :param length: The length of the UDL load to apply.
+    :param load_length: The length of the UDL load to apply.
         Note that start + load_length must be less than the length of the beam.
     :return: A Load object representing the UDL load.
     """
