@@ -6,7 +6,7 @@ from enum import Enum
 from numbers import Number
 
 import numpy as np
-from sympy import Symbol, lambdify, symbols  # type: ignore
+from sympy import Expr, Symbol, lambdify, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.exceptions import (
@@ -26,6 +26,7 @@ class ResultType(Enum):
     Create an Enum type for the different results that can be generated.
     """
 
+    LOAD = "load"
     SHEAR = "shear"
     MOMENT = "moment"
     SLOPE = "slope"
@@ -391,6 +392,31 @@ class Beam:
 
         return ret_val
 
+    def _equations(self, result_type: ResultType):
+        """
+        Return the equations describing the load, shear, moment etc. along the beam
+        from the underlying _symbeam object.
+
+        :param result_type: The result type to return.
+        :return: a sympy object describing the results along the beam.
+        """
+
+        eqn: Expr
+
+        match result_type:
+            case result_type.LOAD:
+                eqn = self._symbeam.load
+            case result_type.SHEAR:
+                eqn = self._symbeam.shear_force()
+            case result_type.MOMENT:
+                eqn = self._symbeam.bending_moment()
+            case result_type.SLOPE:
+                eqn = self._symbeam.slope()
+            case result_type.DEFLECTION:
+                eqn = self._symbeam.deflection()
+
+        return eqn
+
     def _result_at_point(self, position, result_type: ResultType):
         """
         Determine the results at a point along the beam. THis is a helper method for the
@@ -415,16 +441,7 @@ class Beam:
 
         symbol = self._symbeam.variable
 
-        if result_type == result_type.SHEAR:
-            eq = self._symbeam.shear_force()
-        elif result_type == result_type.MOMENT:
-            eq = self._symbeam.bending_moment()
-        elif result_type == result_type.SLOPE:
-            eq = self._symbeam.slope()
-        else:
-            eq = self._symbeam.deflection()
-
-        return eq.subs(symbol, position).evalf()
+        return self._equations(result_type=result_type).subs(symbol, position).evalf()
 
     def shear_at_point(self, position):
         """
@@ -517,14 +534,7 @@ class Beam:
         :param result_type: The result type to query.
         """
 
-        if result_type == result_type.SHEAR:
-            eq = self._symbeam.shear_force()  # type: ignore
-        elif result_type == result_type.MOMENT:
-            eq = self._symbeam.bending_moment()  # type: ignore
-        elif result_type == result_type.SLOPE:
-            eq = self._symbeam.slope()  # type: ignore
-        else:
-            eq = self._symbeam.deflection()  # type: ignore
+        eq = self._equations(result_type=result_type)
 
         symbol = self._symbeam.variable  # type: ignore
 
