@@ -2,6 +2,8 @@
 Define a class hierarchy for loads.
 """
 
+from warnings import warn
+
 from simplebeam.exceptions import LoadPositionError
 
 # load orders based on McCauley's method. Used to set the order of the singularity
@@ -182,6 +184,8 @@ def triangular(*, magnitude, load_length, start=None) -> Load:
     # note that the length of the load is required so that the slope of the ramp load
     # can be determined - sympy uses the slope of the load, not the peak magnitude
     # to determine the ramp load.
+
+    warn("Triangular loads are currently being developed")
 
     if start is None:
         start = 0
