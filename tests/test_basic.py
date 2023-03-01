@@ -146,22 +146,20 @@ def test_key_positions():
     r1 = simplebeam.pin(0)
     r2 = simplebeam.pin(2.5)
 
-    expected_points = sorted(
-        [
-            nextafter(0, length),
-            nextafter(0.4 * length, 0),
-            nextafter(0.4 * length, length),
-            nextafter(0.75 * length, 0),
-            nextafter(0.75 * length, length),
-            nextafter(0.2 * length, 0),
-            nextafter(0.2 * length, length),
-            nextafter(0.9 * length, 0),
-            nextafter(0.9 * length, length),
-            nextafter(2.5, 0),
-            nextafter(2.5, length),
-            nextafter(length, 0),
-        ]
-    )
+    expected_points = {
+        nextafter(0, length),
+        nextafter(0.4 * length, 0),
+        nextafter(0.4 * length, length),
+        nextafter(0.75 * length, 0),
+        nextafter(0.75 * length, length),
+        nextafter(0.2 * length, 0),
+        nextafter(0.2 * length, length),
+        nextafter(0.9 * length, 0),
+        nextafter(0.9 * length, length),
+        nextafter(2.5, 0),
+        nextafter(2.5, length),
+        nextafter(length, 0),
+    }
 
     E = 200e9
     I = 0.001
