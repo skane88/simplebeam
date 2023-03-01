@@ -539,7 +539,9 @@ class Beam:
 
         return sorted(list(points))
 
-    def _result_curve(self, result_type: ResultType) -> tuple[list[float], list[float]]:
+    def _result_curve(
+        self, result_type: ResultType, user_points: list[float] | float | None = None
+    ) -> tuple[list[float], list[float]]:
         """
         Create a series of x, y points along a result set.
 
@@ -555,6 +557,13 @@ class Beam:
         # next make sure that we have the key positions covered
 
         x_key = self.key_positions()
+
+        if user_points is not None:
+            if isinstance(user_points, float):
+                user_points = [user_points]
+
+            for up in user_points:
+                x_key.append(up)
 
         for xk in x_key:
             if xk not in x:
@@ -576,7 +585,9 @@ class Beam:
 
         return x, y
 
-    def _load_curve(self) -> tuple[list[float], list[float]]:
+    def _load_curve(
+        self, user_points: list[float] | float | None = None
+    ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the load curve.
 
@@ -584,31 +595,43 @@ class Beam:
         not accurately show point loads & moments.
         """
 
-        return self._result_curve(result_type=ResultType.LOAD)
+        return self._result_curve(result_type=ResultType.LOAD, user_points=user_points)
 
-    def shear_curve(self) -> tuple[list[float], list[float]]:
+    def shear_curve(
+        self, user_points: list[float] | float | None = None
+    ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the shear curve.
         """
-        return self._result_curve(result_type=ResultType.SHEAR)
+        return self._result_curve(result_type=ResultType.SHEAR, user_points=user_points)
 
-    def moment_curve(self) -> tuple[list[float], list[float]]:
+    def moment_curve(
+        self, user_points: list[float] | float | None = None
+    ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the moment curve.
         """
-        return self._result_curve(result_type=ResultType.MOMENT)
+        return self._result_curve(
+            result_type=ResultType.MOMENT, user_points=user_points
+        )
 
-    def slope_curve(self) -> tuple[list[float], list[float]]:
+    def slope_curve(
+        self, user_points: list[float] | float | None = None
+    ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the slope curve.
         """
-        return self._result_curve(result_type=ResultType.SLOPE)
+        return self._result_curve(result_type=ResultType.SLOPE, user_points=user_points)
 
-    def deflection_curve(self) -> tuple[list[float], list[float]]:
+    def deflection_curve(
+        self, user_points: list[float] | float | None = None
+    ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the deflection curve.
         """
-        return self._result_curve(result_type=ResultType.DEFLECTION)
+        return self._result_curve(
+            result_type=ResultType.DEFLECTION, user_points=user_points
+        )
 
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
