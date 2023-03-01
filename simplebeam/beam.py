@@ -594,7 +594,7 @@ class Beam:
         return x, y
 
     def _load_curve(
-        self, user_points: list[float] | float | None = None
+        self, min_points: int = 11, user_points: list[float] | float | None = None
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the load curve.
@@ -603,42 +603,52 @@ class Beam:
         not accurately show point loads & moments.
         """
 
-        return self._result_curve(result_type=ResultType.LOAD, user_points=user_points)
+        return self._result_curve(
+            result_type=ResultType.LOAD, min_points=min_points, user_points=user_points
+        )
 
     def shear_curve(
-        self, user_points: list[float] | float | None = None
+        self, min_points: int = 11, user_points: list[float] | float | None = None
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the shear curve.
         """
-        return self._result_curve(result_type=ResultType.SHEAR, user_points=user_points)
+        return self._result_curve(
+            result_type=ResultType.SHEAR, min_points=min_points, user_points=user_points
+        )
 
     def moment_curve(
-        self, user_points: list[float] | float | None = None
+        self, min_points: int = 11, user_points: list[float] | float | None = None
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the moment curve.
         """
         return self._result_curve(
-            result_type=ResultType.MOMENT, user_points=user_points
+            result_type=ResultType.MOMENT,
+            min_points=min_points,
+            user_points=user_points,
         )
 
     def slope_curve(
-        self, user_points: list[float] | float | None = None
+        self, min_points: int = 11, user_points: list[float] | float | None = None
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the slope curve.
         """
-        return self._result_curve(result_type=ResultType.SLOPE, user_points=user_points)
+        return self._result_curve(
+            result_type=ResultType.SLOPE, min_points=min_points, user_points=user_points
+        )
 
     def deflection_curve(
-        self, user_points: list[float] | float | None = None
+        self, min_points: int = 11, user_points: list[float] | float | None = None
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the deflection curve.
         """
         return self._result_curve(
-            result_type=ResultType.DEFLECTION, user_points=user_points
+            result_type=ResultType.DEFLECTION,
+            min_points=min_points,
+            user_points=user_points,
         )
 
     def __repr__(self):
