@@ -630,7 +630,7 @@ class Beam:
         )
 
     def slope_curve(
-        self, min_points: int = 11, user_points: list[float] | float | None = None
+        self, min_points: int = 21, user_points: list[float] | float | None = None
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the slope curve.
@@ -674,7 +674,7 @@ def _restraint_symbol(*, position, prefix: str) -> Symbol:
     return symbols(f"{prefix}_" + str(position).replace(".", "_"))
 
 
-def get_points(expr, start, end, min_depth: int = 6, max_depth: int = 8):
+def get_points(expr, start, end, min_depth: int = 4, max_depth: int = 8):
     """
     Evaluates an expression across a range, using a recursive algorithm to try
     and identify discontinuities etc. by checking if 3x points are collinear
