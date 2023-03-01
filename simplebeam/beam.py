@@ -443,6 +443,18 @@ class Beam:
 
         return self._equations(result_type=result_type).subs(symbol, position).evalf()
 
+    def _load_at_point(self, position):
+        """
+        Determine the load at a point along the beam.
+
+        NOTE: This is a hidden method because it will
+        not accurately show point loads & moments.
+
+        :param position: The position to determine the load at, between 0 and length.
+        """
+
+        return self._result_at_point(position=position, result_type=ResultType.LOAD)
+
     def shear_at_point(self, position):
         """
         Determine the shear at a point along the beam.
@@ -563,6 +575,16 @@ class Beam:
             y = y + [0.0]
 
         return x, y
+
+    def _load_curve(self) -> tuple[list[float], list[float]]:
+        """
+        Generate a list of x, y points that define the load curve.
+
+        NOTE: This is a hidden method because it will
+        not accurately show point loads & moments.
+        """
+
+        return self._result_curve(result_type=ResultType.LOAD)
 
     def shear_curve(self) -> tuple[list[float], list[float]]:
         """
