@@ -30,7 +30,7 @@ def test_moment_curve():
         user_points + [nextafter(0, l), nextafter(l, 0)] + list(np.linspace(0, l, 101))
     )
 
-    x, y = beam.moment_curve(user_points=user_points)
+    x, y = beam.moment_curve(user_points=user_points, fast=False)
 
     for e in expected_points:
         assert e in x
@@ -42,7 +42,7 @@ def test_moment_curve():
 
     beam = fix_ended(length=l, loads=l1)
 
-    x, y = beam.moment_curve(user_points=user_points)
+    x, y = beam.moment_curve(user_points=user_points, fast=False)
 
     for e in expected_points:
         assert e in x
@@ -58,7 +58,7 @@ def test_moment_curve():
 
     beam = simple(length=l, loads=l1)
 
-    x, y = beam.moment_curve(user_points=user_points)
+    x, y = beam.moment_curve(user_points=user_points, fast=False)
 
     assert isclose(max(y), P * l * 0.25)
     assert isclose(y[x.index(0.25 * l)], 0.5 * P * l * 0.25)
@@ -92,7 +92,7 @@ def test_shear_curve():
         user_points + [nextafter(0, l), nextafter(l, 0)] + list(np.linspace(0, l, 101))
     )
 
-    x, y = beam.shear_curve(user_points=user_points)
+    x, y = beam.shear_curve(user_points=user_points, fast=False)
 
     for e in expected_points:
         assert e in x
@@ -105,7 +105,7 @@ def test_shear_curve():
 
     beam = fix_ended(length=l, loads=l1)
 
-    x, y = beam.shear_curve(user_points=user_points)
+    x, y = beam.shear_curve(user_points=user_points, fast=False)
 
     for e in expected_points:
         assert e in x
@@ -121,7 +121,7 @@ def test_shear_curve():
 
     beam = simple(length=l, loads=l1)
 
-    x, y = beam.shear_curve(user_points=user_points)
+    x, y = beam.shear_curve(user_points=user_points, fast=False)
 
     assert isclose(max(y), 0.5 * P)
     assert isclose(min(y), -0.5 * P)
