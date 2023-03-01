@@ -405,6 +405,8 @@ class Beam:
 
         eqn: Expr
 
+        result_type = ResultType(result_type)
+
         match result_type:
             case ResultType.LOAD:
                 eqn = self._symbeam.load  # type: ignore
