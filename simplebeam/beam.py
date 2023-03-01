@@ -493,9 +493,9 @@ class Beam:
             position=position, result_type=ResultType.DEFLECTION
         )
 
-    def key_positions(self) -> list[float]:
+    def key_positions(self) -> set[float]:
         """
-        Return a list containing key points along the length of a beam. These are:
+        Return a set containing key points along the length of a beam. These are:
 
         * The start & end of a beam.
         * The location of any loads or restraints that cause discontinuities in the
@@ -537,7 +537,7 @@ class Beam:
             if (x := load.end) is not None:
                 points = points | offset_points(x)
 
-        return sorted(list(points))
+        return points
 
     def _result_curve(
         self, result_type: ResultType, user_points: list[float] | float | None = None
@@ -563,7 +563,7 @@ class Beam:
                 user_points = [user_points]
 
             for up in user_points:
-                x_key.append(up)
+                x_key.add(up)
 
         for xk in x_key:
             if xk not in x:
@@ -773,7 +773,7 @@ def clean_points(x_coords, y_coords, x_to_keep=None):
     if x_to_keep is None:
         x_to_keep = [x_coords[0]]
 
-    x_to_keep = np.array(x_to_keep)
+    x_to_keep = np.array(list(x_to_keep))
 
     if len(x_coords) < 3:
         return x_coords, y_coords
