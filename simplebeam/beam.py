@@ -540,12 +540,17 @@ class Beam:
         return points
 
     def _result_curve(
-        self, result_type: ResultType, user_points: list[float] | float | None = None
+        self,
+        result_type: ResultType,
+        min_points: int = 11,
+        user_points: list[float] | float | None = None,
     ) -> tuple[list[float], list[float]]:
         """
         Create a series of x, y points along a result set.
 
         :param result_type: The result type to query.
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
         """
 
         eq = self._equations(result_type=result_type)
@@ -564,6 +569,9 @@ class Beam:
 
             for up in user_points:
                 x_key.add(up)
+
+        for i in np.linspace(0, self.length, min_points):
+            x_key.add(i)
 
         for xk in x_key:
             if xk not in x:
