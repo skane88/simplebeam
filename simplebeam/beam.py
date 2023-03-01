@@ -573,7 +573,7 @@ class Beam:
         xy = sorted(zip(x, y), key=lambda x: x[0])
         x, y = (list(p) for p in zip(*xy))
 
-        x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=x_key)
+        x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=list(x_key))
 
         if y[0] != 0:
             x = [0.0] + x
@@ -773,7 +773,7 @@ def clean_points(x_coords, y_coords, x_to_keep=None):
     if x_to_keep is None:
         x_to_keep = [x_coords[0]]
 
-    x_to_keep = np.array(list(x_to_keep))
+    x_to_keep = np.array(x_to_keep)
 
     if len(x_coords) < 3:
         return x_coords, y_coords
