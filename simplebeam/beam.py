@@ -556,7 +556,8 @@ class Beam:
         :param user_points: Points to keep at user defined locations.
         :param fast: If fast, only evaluate at min_points and user_points. If not fast,
             use an adapative algorithm to try and find any singularities in the beam
-            curves.
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
         """
 
         eq = self._equations(result_type=result_type)
