@@ -49,3 +49,9 @@ class RestraintPositionError(RestraintError):
     """
     Class for errors related to the position of the restraint.
     """
+
+
+class ResultError(SimpleBeamError):
+    """
+    Class for errors in the results.
+    """

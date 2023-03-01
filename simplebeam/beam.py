@@ -6,7 +6,8 @@ from enum import Enum
 from numbers import Number
 
 import numpy as np
-from sympy import Expr, Symbol, lambdify, symbols  # type: ignore
+import sympy.core.numbers
+from sympy import Expr, Symbol, lambdify, oo, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.exceptions import (
@@ -14,6 +15,7 @@ from simplebeam.exceptions import (
     LoadPositionError,
     PointNotOnBeamError,
     RestraintPositionError,
+    ResultError,
 )
 from simplebeam.loads import Load
 from simplebeam.restraints import Restraint, fixed, pin
@@ -404,16 +406,16 @@ class Beam:
         eqn: Expr
 
         match result_type:
-            case result_type.LOAD:
-                eqn = self._symbeam.load
-            case result_type.SHEAR:
-                eqn = self._symbeam.shear_force()
-            case result_type.MOMENT:
-                eqn = self._symbeam.bending_moment()
-            case result_type.SLOPE:
-                eqn = self._symbeam.slope()
-            case result_type.DEFLECTION:
-                eqn = self._symbeam.deflection()
+            case ResultType.LOAD:
+                eqn = self._symbeam.load  # type: ignore
+            case ResultType.SHEAR:
+                eqn = self._symbeam.shear_force()  # type: ignore
+            case ResultType.MOMENT:
+                eqn = self._symbeam.bending_moment()  # type: ignore
+            case ResultType.SLOPE:
+                eqn = self._symbeam.slope()  # type: ignore
+            case ResultType.DEFLECTION:
+                eqn = self._symbeam.deflection()  # type: ignore
 
         return eqn
 
@@ -590,6 +592,12 @@ class Beam:
         x, y = (list(p) for p in zip(*xy))
 
         x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=list(x_key))
+
+        if (y[0] == oo or y[0] == -oo) and (x[0] == 0):
+            y[0] = 0
+
+        if (y[-1] == oo or y[-1] == -oo) and (x[-1] == self.length):
+            y[-1] = 0
 
         if y[0] != 0:
             x = [0.0] + x
