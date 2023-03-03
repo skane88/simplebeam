@@ -596,10 +596,10 @@ class Beam:
 
         x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=list(x_key))
 
-        if (y[0] == oo or y[0] == -oo) and (x[0] == 0):
+        if y[0] in [oo, -oo] and x[0] == 0:
             y[0] = 0
 
-        if (y[-1] == oo or y[-1] == -oo) and (x[-1] == self.length):
+        if y[-1] in [oo, -oo] and x[-1] == self.length:
             y[-1] = 0
 
         if y[0] != 0:
