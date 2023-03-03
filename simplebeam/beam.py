@@ -6,7 +6,6 @@ from enum import Enum
 from numbers import Number
 
 import numpy as np
-import sympy.core.numbers
 from sympy import Expr, Symbol, lambdify, oo, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
@@ -418,6 +417,8 @@ class Beam:
                 eqn = self._symbeam.slope()  # type: ignore
             case ResultType.DEFLECTION:
                 eqn = self._symbeam.deflection()  # type: ignore
+            case _:
+                raise ResultError("Invalid Result Type Requested")
 
         return eqn
 
@@ -506,22 +507,22 @@ class Beam:
             Shear, moment, slope or deflection curves.
         """
 
-        def offset_points(x: float) -> set[float]:
+        def offset_points(to_offset: float) -> set[float]:
             """
             Helper function to build points to add ot the set of points to return.
             """
 
             ret: set[float] = set()
 
-            if x == 0:
+            if to_offset == 0:
                 ret.add(math.nextafter(0, self.length))
 
-            elif x == self.length:
+            elif to_offset == self.length:
                 ret.add(math.nextafter(self.length, 0))
 
             else:
-                ret.add(math.nextafter(x, 0))
-                ret.add(math.nextafter(x, self.length))
+                ret.add(math.nextafter(to_offset, 0))
+                ret.add(math.nextafter(to_offset, self.length))
 
             return ret
 
@@ -591,7 +592,7 @@ class Beam:
                 x.append(xk)
                 y.append(eq.subs(symbol, xk).evalf())
 
-        xy = sorted(zip(x, y), key=lambda x: x[0])
+        xy = sorted(zip(x, y), key=lambda l: l[0])
         x, y = (list(p) for p in zip(*xy))
 
         x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=list(x_key))
