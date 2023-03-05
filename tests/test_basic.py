@@ -4,8 +4,6 @@ Initial test file.
 
 from math import isclose, nextafter
 
-import pytest
-
 import simplebeam
 
 

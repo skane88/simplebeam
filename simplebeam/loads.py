@@ -34,7 +34,7 @@ class Load:
         """
         The
 
-        :param order: The order of the singularity function to use. May be an integer
+        :param order: The order of the singularity function to use. Can be an integer
             between -2 and 2 or one of the following strings:
 
             "moment"

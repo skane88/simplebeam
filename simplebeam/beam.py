@@ -561,7 +561,7 @@ class Beam:
         :param min_points: The minimum no. of points to return.
         :param user_points: Points to keep at user defined locations.
         :param fast: If fast, only evaluate at min_points and user_points. If not fast,
-            use an adapative algorithm to try and find any singularities in the beam
+            use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
         """
@@ -629,6 +629,13 @@ class Beam:
 
         NOTE: This is a hidden method because it will
         not accurately show point loads & moments.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
         """
 
         return self._result_curve(
@@ -646,6 +653,13 @@ class Beam:
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the shear curve.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
         """
         return self._result_curve(
             result_type=ResultType.SHEAR,
@@ -662,6 +676,13 @@ class Beam:
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the moment curve.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
         """
         return self._result_curve(
             result_type=ResultType.MOMENT,
@@ -678,6 +699,13 @@ class Beam:
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the slope curve.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
         """
         return self._result_curve(
             result_type=ResultType.SLOPE,
@@ -694,6 +722,13 @@ class Beam:
     ) -> tuple[list[float], list[float]]:
         """
         Generate a list of x, y points that define the deflection curve.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
         """
         return self._result_curve(
             result_type=ResultType.DEFLECTION,
@@ -714,7 +749,12 @@ class Beam:
 
         :param result_type: A ResultType object or the following strings:
             'shear', 'moment', 'slope', 'deflection' or 's', 'm', 'sl', 'd'
-        :return:
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
         """
 
         result_map = {
