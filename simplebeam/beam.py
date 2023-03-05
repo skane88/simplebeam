@@ -1,10 +1,13 @@
 """
 Basic Beam element class.
 """
+# pylint: disable=C0302
+
 import math
 from enum import Enum
 from numbers import Number
 
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 from sympy import Expr, Symbol, lambdify, oo, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
@@ -698,6 +701,66 @@ class Beam:
             user_points=user_points,
             fast=fast,
         )
+
+    def plot_results(
+        self,
+        result_type: ResultType | str,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Plot the results along the length of the beam.
+
+        :param result_type: A ResultType object or the following strings:
+            'shear', 'moment', 'slope', 'deflection' or 's', 'm', 'sl', 'd'
+        :return:
+        """
+
+        result_map = {
+            "s": ResultType.SHEAR,
+            "m": ResultType.MOMENT,
+            "sl": ResultType.SLOPE,
+            "d": ResultType.DEFLECTION,
+            "shear": ResultType.SHEAR,
+            "moment": ResultType.MOMENT,
+            "slope": ResultType.SLOPE,
+            "deflection": ResultType.DEFLECTION,
+        }
+
+        if isinstance(result_type, str):
+            result_type = result_map[result_type]
+
+        match result_type:
+            case ResultType.LOAD:
+                curve = self._load_curve
+                y_label = "Load"
+            case ResultType.SHEAR:
+                curve = self.shear_curve
+                y_label = "Shear"
+            case ResultType.MOMENT:
+                curve = self.moment_curve
+                y_label = "Moment"
+            case ResultType.SLOPE:
+                curve = self.slope_curve
+                y_label = "Slope"
+            case ResultType.DEFLECTION:
+                curve = self.deflection_curve
+                y_label = "Deflection"
+            case _:
+                raise ResultError("Invalid Result Type Requested")
+
+        x, y = curve(min_points=min_points, user_points=user_points, fast=fast)
+
+        fig, ax = plt.subplots()
+
+        ax.plot(x, y, linewidth=2)
+        ax.fill_between(x, y, alpha=0.3)
+        ax.set_xlabel("Length")
+        ax.set_ylabel(y_label)
+        ax.grid(True)
+
+        fig.show()
 
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
