@@ -603,6 +603,8 @@ class Beam:
         if y[-1] in [oo, -oo] and x[-1] == self.length:
             y[-1] = 0
 
+        y = [float(yi) for yi in y]
+
         if y[0] != 0:
             x = [0.0] + x
             y = [0.0] + y
