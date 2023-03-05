@@ -614,7 +614,7 @@ class Beam:
 
         if x[-1] != self.length or y[-1] != 0:
             x = x + [self.length]
-            y = y + [0.0]
+            y += [0.0]
 
         return x, y
 
