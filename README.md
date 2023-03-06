@@ -23,6 +23,9 @@ Use your preferred virtual environment solution and then simply pip install.
 # Basic Usage
 *To be filled out*
 
+# Documentation
+You're reading it. Additionally, check the tests folder to see additional uses. I may add documentation at some future point in time. 
+
 # Future Development
 The following future developments *may* be done:
 
