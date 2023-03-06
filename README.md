@@ -12,7 +12,9 @@ The use of the term "Simple" does not mean that only simply-supported beams will
 This is primarily intended to be a proof of concept package for me - at this point it is not a robust means for doing your engineering analysis. This may change as the package develops.
 
 # Disclaimer
-While all efforts have been made to ensure that the appropriate engineering theories etc. have been implemented correctly, it is the user's responsibilty to ensure that all output is correct. In particular, users should be familiar with basic structural mechanics and standard engineering practices. For example, doing independent checks of tools you take from unknown authors on the internet.
+While all efforts have been made to ensure that the appropriate engineering theories etc. have been implemented correctly, it is the user's responsibilty to ensure that all output is correct. In particular, users should be familiar with basic structural mechanics and standard engineering practices.
+
+For example, you should be doing independent checks of tools you take from unknown authors on the internet.
 
 # Installation
 
@@ -24,7 +26,7 @@ Use your preferred virtual environment solution and then simply pip install.
 *To be filled out*
 
 # Documentation
-You're reading it. Additionally, check the tests folder to see additional uses. I may add documentation at some future point in time. 
+You're reading it. Additionally, check the tests folder to see additional uses. I may add documentation at some future point in time but no promises. 
 
 # Future Development
 The following future developments *may* be done:
