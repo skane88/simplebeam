@@ -12,7 +12,7 @@ The use of the term "Simple" does not mean that only simply-supported beams will
 This is primarily intended to be a proof of concept package for me - at this point it is not a robust means for doing your engineering analysis. This may change as the package develops.
 
 # Disclaimer
-Users should be familiar with basic structural mechanics and standard engineering practices such as doing independent checks of tools you take from unknown authors on the internet. This should not be relied upon for any real-world engineering without appropriate independent verification.
+While all efforts have been made to ensure that the appropriate engineering theories etc. have been implemented correctly, it is the user's responsibilty to ensure that all output is correct. In particular, users should be familiar with basic structural mechanics and standard engineering practices. For example, doing independent checks of tools you take from unknown authors on the internet.
 
 # Installation
 
@@ -29,3 +29,8 @@ The following future developments *may* be done:
 - [ ] Implementation of helper methods for different load types.
 - [ ] Multiple load cases & load combinations
 - [ ] Implementation of beams with pins & varying properties.
+
+# Contributing
+Feel free to contribute through a pull request to provide bug fixes, new features or documentation.
+
+Note that the intent of this program is that it will remain focussed on simple 2D beam bending only.
