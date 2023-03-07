@@ -775,18 +775,23 @@ class Beam:
             case ResultType.LOAD:
                 curve = self._load_curve
                 y_label = "Load"
+                ax_title = "Load Along Beam"
             case ResultType.SHEAR:
                 curve = self.shear_curve
                 y_label = "Shear"
+                ax_title = "Shear Along Beam"
             case ResultType.MOMENT:
                 curve = self.moment_curve
                 y_label = "Moment"
+                ax_title = "Moment Along Beam"
             case ResultType.SLOPE:
                 curve = self.slope_curve
                 y_label = "Slope"
+                ax_title = "Slope Along Beam"
             case ResultType.DEFLECTION:
                 curve = self.deflection_curve
                 y_label = "Deflection"
+                ax_title = "Deflection Along Beam"
             case _:
                 raise ResultError("Invalid Result Type Requested")
 
@@ -798,6 +803,7 @@ class Beam:
         ax.fill_between(x, y, alpha=0.3)
         ax.set_xlabel("Length")
         ax.set_ylabel(y_label)
+        ax.set_title(ax_title)
         ax.grid(True)
 
         fig.show()
