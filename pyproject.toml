@@ -23,3 +23,6 @@ profile = "black"
 select = ["A", "E", "F", "W", "B", "SIM", "C4", "I"]
 line-length = 88
 ignore = ["F401", "E741"]
+
+[tool.pylint]
+disable = ["W0611", "R0902", "R0914", "C0103"]
