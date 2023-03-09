@@ -14,3 +14,7 @@ dependencies = ["sympy", "numpy", "matplotlib"]
 
 [project.urls]
 Home = "https://github.com/skane88/simplebeam"
+
+
+[tool.isort]
+profile = "black"
