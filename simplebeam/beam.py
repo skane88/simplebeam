@@ -595,8 +595,8 @@ class Beam:
                 x.append(xk)
                 y.append(eq.subs(symbol, xk).evalf())
 
-        xy = sorted(zip(x, y), key=lambda l: l[0])
-        x, y = (list(p) for p in zip(*xy))
+        xy = sorted(zip(x, y, strict=True), key=lambda l: l[0])
+        x, y = (list(p) for p in zip(*xy, strict=True))
 
         x, y = clean_points(x_coords=x, y_coords=y, x_to_keep=list(x_key))
 

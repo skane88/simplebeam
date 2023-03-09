@@ -18,3 +18,8 @@ Home = "https://github.com/skane88/simplebeam"
 
 [tool.isort]
 profile = "black"
+
+[tool.ruff]
+select = ["A", "E", "F", "W", "B", "SIM", "C4", "I"]
+line-length = 88
+ignore = ["F401", "E741"]
