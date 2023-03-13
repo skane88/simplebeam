@@ -808,6 +808,102 @@ class Beam:
 
         fig.show()
 
+    def plot_shear(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Plot the shear along the length of the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        self.plot_results(
+            result_type=ResultType.SHEAR,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def plot_moment(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Plot the moment along the length of the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        self.plot_results(
+            result_type=ResultType.MOMENT,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def plot_slope(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Plot the slope along the length of the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        self.plot_results(
+            result_type=ResultType.SLOPE,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def plot_deflection(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Plot the deflection along the length of the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        self.plot_results(
+            result_type=ResultType.DEFLECTION,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
 
