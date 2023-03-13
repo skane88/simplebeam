@@ -906,6 +906,51 @@ class Beam:
             fast=fast,
         )
 
+    def reaction_summary(self):
+        """
+        Return a summary of reactions on the beam in tabular form.
+        """
+
+        table = Table(title="Reactions")
+        table.add_column("Position", justify="center")
+        table.add_column("Force", justify="center")
+        table.add_column("Moment", justify="center")
+
+        max_force = None
+        max_moment = None
+        min_force = None
+        min_moment = None
+
+        for i, r in self.reactions.items():
+            rest = self.restraints[i]
+
+            if r["F"] is not None:
+                max_force = r["F"] if max_force is None else max(max_force, r["F"])
+                min_force = r["F"] if min_force is None else min(min_force, r["F"])
+            if r["M"] is not None:
+                max_moment = r["M"] if max_moment is None else max(max_moment, r["M"])
+                min_moment = r["M"] if min_moment is None else min(min_moment, r["M"])
+
+            table.add_row(
+                f"{rest.position:.3e}",
+                f"{r['F']:{'' if r['F'] is None else '.3e'}}",
+                f"{r['M']:{'' if r['M'] is None else '.3e'}}",
+            )
+
+        table.add_row(
+            "Max.",
+            f"{max_force:{'' if max_force is None else '.3e'}}",
+            f"{max_moment:{'' if max_moment is None else '.3e'}}",
+        )
+        table.add_row(
+            "Min.",
+            f"{min_force:{'' if min_force is None else '.3e'}}",
+            f"{min_moment:{'' if min_moment is None else '.3e'}}",
+        )
+
+        console = Console()
+        console.print(table)
+
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
 
