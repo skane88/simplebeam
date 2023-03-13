@@ -9,6 +9,8 @@ from numbers import Number
 
 import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
+from rich.console import Console
+from rich.table import Table
 from sympy import Expr, Symbol, lambdify, oo, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
