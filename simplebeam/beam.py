@@ -743,6 +743,7 @@ class Beam:
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
+        xkcd: bool = False,
     ):
         """
         Plot the results along the length of the beam.
@@ -755,6 +756,7 @@ class Beam:
             use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
+        :param xkcd: Use xkcd style plots for a bit of fun.
         """
 
         result_map = {
@@ -797,16 +799,23 @@ class Beam:
 
         x, y = curve(min_points=min_points, user_points=user_points, fast=fast)
 
-        fig, ax = plt.subplots()
+        def actual_plot():
+            fig, ax = plt.subplots()
 
-        ax.plot(x, y, linewidth=2)
-        ax.fill_between(x, y, alpha=0.3)
-        ax.set_xlabel("Length")
-        ax.set_ylabel(y_label)
-        ax.set_title(ax_title)
-        ax.grid(True)
+            ax.plot(x, y, linewidth=2)
+            ax.fill_between(x, y, alpha=0.3)
+            ax.set_xlabel("Length")
+            ax.set_ylabel(y_label)
+            ax.set_title(ax_title)
+            ax.grid(True)
 
-        fig.show()
+            fig.show()
+
+        if xkcd:
+            with plt.xkcd():
+                actual_plot()
+        else:
+            actual_plot()
 
     def plot_shear(
         self,
