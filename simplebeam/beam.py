@@ -911,7 +911,7 @@ class Beam:
         Return a summary of reactions on the beam in tabular form.
         """
 
-        table = Table(title="Reactions")
+        table = Table(title="Reactions", expand=True)
         table.add_column("Position", justify="center")
         table.add_column("Force", justify="center")
         table.add_column("Moment", justify="center")
@@ -936,6 +936,8 @@ class Beam:
                 f"{r['F']:{'' if r['F'] is None else '.3e'}}",
                 f"{r['M']:{'' if r['M'] is None else '.3e'}}",
             )
+
+        table.add_section()
 
         table.add_row(
             "Max.",
