@@ -953,6 +953,125 @@ class Beam:
         console = Console()
         console.print(table)
 
+    def result_summary(
+        self,
+        min_points: int = 5,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Display a summary table of results along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        table = Table(title="Results", expand=True)
+        table.add_column("Position", justify="center")
+        table.add_column("Shear", justify="center")
+        table.add_column("Moment", justify="center")
+        table.add_column("Slope", justify="center")
+        table.add_column("Deflection", justify="center")
+
+        def process_curve(curve):
+            """
+            Process curves in case there are multiple y values for a single x value.
+            """
+
+            x, y = curve
+
+            min_y = min(y)
+            max_y = max(y)
+
+            x_dict = {}
+
+            for xi, yi in zip(x, y, strict=True):
+                if xi not in x_dict:
+                    x_dict[xi] = []
+
+                x_dict[xi].append(yi)
+
+            x = sorted(x_dict)
+            y = [x_dict[xi] for xi in x]
+
+            return x, y, min_y, max_y
+
+        shear = process_curve(
+            self.shear_curve(min_points=min_points, user_points=user_points, fast=fast)
+        )
+        moment = process_curve(
+            self.moment_curve(min_points=min_points, user_points=user_points, fast=fast)
+        )
+        slope = process_curve(
+            self.slope_curve(min_points=min_points, user_points=user_points, fast=fast)
+        )
+        deflection = process_curve(
+            self.deflection_curve(
+                min_points=min_points, user_points=user_points, fast=fast
+            )
+        )
+
+        if len(shear[0]) != len(moment[0]):
+            raise ResultError("Expected shear & moment summaries to be the same length")
+        if len(shear[0]) != len(slope[0]):
+            raise ResultError("Expected shear & slope summaries to be the same length")
+        if len(shear[0]) != len(deflection[0]):
+            raise ResultError(
+                "Expected shear & deflection summaries to be the same length"
+            )
+
+        if set(shear[0]) != set(moment[0]):
+            raise ResultError(
+                "Expected shear and moment summaries to have the same x values"
+            )
+        if set(shear[0]) != set(slope[0]):
+            raise ResultError(
+                "Expected shear and slope summaries to have the same x values"
+            )
+        if set(shear[0]) != set(deflection[0]):
+            raise ResultError(
+                "Expected shear and deflection summaries to have the same x values"
+            )
+
+        for i in range(len(shear[0])):
+            x = shear[0][i]
+            y_shear = " / ".join([f"{y:.3e}" for y in shear[1][i]])
+            y_moment = " / ".join([f"{y:.3e}" for y in moment[1][i]])
+            y_slope = " / ".join([f"{y:.3e}" for y in slope[1][i]])
+            y_deflection = " / ".join([f"{y:.3e}" for y in deflection[1][i]])
+
+            table.add_row(
+                f"{x:.3e}",
+                f"{y_shear}",
+                f"{y_moment}",
+                f"{y_slope}",
+                f"{y_deflection}",
+            )
+
+        table.add_section()
+
+        table.add_row(
+            "Max",
+            f"{shear[3]:.3e}",
+            f"{moment[3]:.3e}",
+            f"{slope[3]:.3e}",
+            f"{deflection[3]:.3e}",
+        )
+        table.add_row(
+            "Min",
+            f"{shear[2]:.3e}",
+            f"{moment[2]:.3e}",
+            f"{slope[2]:.3e}",
+            f"{deflection[2]:.3e}",
+        )
+
+        console = Console()
+        console.print(table)
+
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
 
