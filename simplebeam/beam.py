@@ -776,26 +776,19 @@ class Beam:
         match result_type:
             case ResultType.LOAD:
                 curve = self._load_curve
-                y_label = "Load"
-                ax_title = "Load Along Beam"
             case ResultType.SHEAR:
                 curve = self.shear_curve
-                y_label = "Shear"
-                ax_title = "Shear Along Beam"
             case ResultType.MOMENT:
                 curve = self.moment_curve
-                y_label = "Moment"
-                ax_title = "Moment Along Beam"
             case ResultType.SLOPE:
                 curve = self.slope_curve
-                y_label = "Slope"
-                ax_title = "Slope Along Beam"
             case ResultType.DEFLECTION:
                 curve = self.deflection_curve
-                y_label = "Deflection"
-                ax_title = "Deflection Along Beam"
             case _:
                 raise ResultError("Invalid Result Type Requested")
+
+        y_label = f"{result_type.value.capitalize()}"
+        ax_title = f"{result_type.value.capitalize()} Along Beam"
 
         x, y = curve(min_points=min_points, user_points=user_points, fast=fast)
 
