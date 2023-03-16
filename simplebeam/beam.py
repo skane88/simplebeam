@@ -1002,23 +1002,23 @@ class Beam:
             Process curves in case there are multiple y values for a single x value.
             """
 
-            x, y = curve
+            xc, yc = curve
 
-            min_y = min(y)
-            max_y = max(y)
+            min_y = min(yc)
+            max_y = max(yc)
 
             x_dict = {}
 
-            for xi, yi in zip(x, y, strict=True):
+            for xi, yi in zip(xc, yc, strict=True):
                 if xi not in x_dict:
                     x_dict[xi] = []
 
                 x_dict[xi].append(yi)
 
-            x = sorted(x_dict)
-            y = [x_dict[xi] for xi in x]
+            xc = sorted(x_dict)
+            yc = [x_dict[xi] for xi in xc]
 
-            return x, y, min_y, max_y
+            return xc, yc, min_y, max_y
 
         shear = process_curve(
             self.shear_curve(min_points=min_points, user_points=user_points, fast=fast)
