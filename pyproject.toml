@@ -17,7 +17,7 @@ Home = "https://github.com/skane88/simplebeam"
 
 
 [project.optional-dependencies]
-dev = ['black', 'isort', 'coverage', ' mypy', 'pylint', 'pytest', 'ruff']
+dev = ['black', 'isort', 'coverage', 'mypy', 'pylint', 'pytest', 'ruff']
 
 [tool.isort]
 profile = "black"
