@@ -812,6 +812,9 @@ class Beam:
         """
         Plot the load along the length of the beam.
 
+        NOTE: Private method because the load plot does not include
+        point loads / moments.
+
         :param min_points: The minimum no. of points to return.
         :param user_points: Points to keep at user defined locations.
         :param fast: If fast, only evaluate at min_points and user_points. If not fast,
