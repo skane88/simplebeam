@@ -10,7 +10,22 @@ license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.10"
 dynamic = ["version", "description"]
-dependencies = ["sympy", "numpy", "matplotlib"]
+dependencies = ["sympy", "numpy", "matplotlib", "rich"]
 
 [project.urls]
 Home = "https://github.com/skane88/simplebeam"
+
+
+[project.optional-dependencies]
+dev = ['black', 'isort', 'coverage', ' mypy', 'pylint', 'pytest', 'ruff']
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+select = ["A", "E", "F", "W", "B", "SIM", "C4", "I"]
+line-length = 88
+ignore = ["F401", "E741"]
+
+[tool.pylint]
+disable = ["W0611", "R0902", "R0914", "C0103"]

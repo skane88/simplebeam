@@ -2,7 +2,7 @@
 Basic package for doing beam bending analysis.
 """
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 from simplebeam.beam import Beam, cantilever, fix_ended, propped_cantilever, simple
 from simplebeam.loads import Load, moment, point, triangular, udl

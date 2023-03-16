@@ -9,3 +9,9 @@ repos:
   hooks:
       - id: isort
         args: ["--profile", "black"]
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  # Ruff version.
+  rev: 'v0.0.256'
+  hooks:
+    - id: ruff
