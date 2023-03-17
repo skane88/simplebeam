@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 from rich.console import Console
 from rich.table import Table
-from sympy import Expr, Symbol, lambdify, oo, symbols  # type: ignore
+from sympy import Expr, Rational, Symbol, lambdify, oo, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.exceptions import (
@@ -283,17 +283,21 @@ class Beam:
 
         self._restraints.sort(key=lambda x: x.position)
 
+        # Note - using the call to sympy Rational to avoid issues that can cause the
+        # solver to error out on indeterminate beams when floats are used as input.
         for load in self.loads:
-            beam.apply_load(
-                value=load.magnitude, start=load.start, order=load.order, end=load.end
-            )
+            value = Rational(load.magnitude)
+            start = Rational(load.start)
+            end = None if load.end is None else Rational(load.end)
+
+            beam.apply_load(value=value, start=start, order=load.order, end=end)
 
         for restraint in self.restraints:
             if restraint.dy:
                 beam.bc_deflection.append((restraint.position, 0))
                 beam.apply_load(
                     _restraint_symbol(position=restraint.position, prefix="F"),
-                    restraint.position,
+                    Rational(restraint.position),
                     order=-1,
                 )
 
@@ -301,7 +305,7 @@ class Beam:
                 beam.bc_slope.append((restraint.position, 0))
                 beam.apply_load(
                     _restraint_symbol(position=restraint.position, prefix="M"),
-                    restraint.position,
+                    Rational(restraint.position),
                     order=-2,
                 )
 
