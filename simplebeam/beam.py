@@ -411,6 +411,11 @@ class Beam:
         :return: a sympy object describing the results along the beam.
         """
 
+        if not self.solved:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+        if self._symbeam is None:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+
         eqn: Expr
 
         result_type = ResultType(result_type)
