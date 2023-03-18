@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 from rich.console import Console
 from rich.table import Table
-from sympy import Expr, Symbol, lambdify, oo, symbols  # type: ignore
+from sympy import Expr, Rational, Symbol, lambdify, oo, symbols  # type: ignore
 from sympy.physics.continuum_mechanics.beam import Beam as SymBeam  # type: ignore
 
 from simplebeam.exceptions import (
@@ -283,17 +283,21 @@ class Beam:
 
         self._restraints.sort(key=lambda x: x.position)
 
+        # Note - using the call to sympy Rational to avoid issues that can cause the
+        # solver to error out on indeterminate beams when floats are used as input.
         for load in self.loads:
-            beam.apply_load(
-                value=load.magnitude, start=load.start, order=load.order, end=load.end
-            )
+            value = Rational(load.magnitude)
+            start = Rational(load.start)
+            end = None if load.end is None else Rational(load.end)
+
+            beam.apply_load(value=value, start=start, order=load.order, end=end)
 
         for restraint in self.restraints:
             if restraint.dy:
                 beam.bc_deflection.append((restraint.position, 0))
                 beam.apply_load(
                     _restraint_symbol(position=restraint.position, prefix="F"),
-                    restraint.position,
+                    Rational(restraint.position),
                     order=-1,
                 )
 
@@ -301,7 +305,7 @@ class Beam:
                 beam.bc_slope.append((restraint.position, 0))
                 beam.apply_load(
                     _restraint_symbol(position=restraint.position, prefix="M"),
-                    restraint.position,
+                    Rational(restraint.position),
                     order=-2,
                 )
 
@@ -406,6 +410,11 @@ class Beam:
         :param result_type: The result type to return.
         :return: a sympy object describing the results along the beam.
         """
+
+        if not self.solved:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
+        if self._symbeam is None:
+            raise BeamNotSolvedError(BEAM_NOT_SOLVED_WARNING)
 
         eqn: Expr
 
@@ -739,12 +748,13 @@ class Beam:
             fast=fast,
         )
 
-    def plot_results(
+    def plot_results(  # pylint: disable=R0913
         self,
         result_type: ResultType | str,
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
+        annotation: bool = True,
     ):
         """
         Plot the results along the length of the beam.
@@ -757,6 +767,7 @@ class Beam:
             use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
+        :param annotation: Annotate key points (max & minimum positions)
         """
 
         result_map = {
@@ -801,6 +812,56 @@ class Beam:
         ax.set_title(ax_title)
         ax.grid(True)
 
+        if annotation:
+            y_max = max(y)
+            y_min = min(y)
+
+            x_max = x[y.index(y_max)]
+            x_min = x[y.index(y_min)]
+
+            x_max_ann_dir = 1 if x_max < 0.75 * self.length else -0.25
+            x_min_ann_dir = 1 if x_min < 0.75 * self.length else -0.25
+
+            def annotate(*, x_ann, y_ann, x_pos, y_pos, ann_ax=None):
+                """
+                Helper method to annotate the plot
+                """
+
+                if not ann_ax:
+                    ann_ax = plt.gca()
+
+                text = f"{y_ann:.2e} at position {x_ann:.3f}"
+
+                bbox_props = {
+                    "boxstyle": "square,pad=0.3",
+                    "fc": "w",
+                    "ec": "k",
+                    "lw": 0.72,
+                }
+                arrow_props = {"arrowstyle": "-", "connectionstyle": "angle,angleA=60"}
+                kw = {
+                    "xycoords": "data",
+                    "textcoords": "offset points",
+                    "arrowprops": arrow_props,
+                    "bbox": bbox_props,
+                    "ha": "right",
+                    "va": "top",
+                    "fontsize": 8,
+                }
+
+                ann_ax.annotate(text, xy=(x_ann, y_ann), xytext=(x_pos, y_pos), **kw)
+
+            annotate(
+                x_ann=x_min, y_ann=y_min, ann_ax=ax, x_pos=x_min_ann_dir * 100, y_pos=20
+            )
+            annotate(
+                x_ann=x_max,
+                y_ann=y_max,
+                ann_ax=ax,
+                x_pos=x_max_ann_dir * 100,
+                y_pos=-20,
+            )
+
         fig.show()
 
     def _plot_load(
@@ -808,6 +869,7 @@ class Beam:
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
+        annotation: bool = True,
     ):
         """
         Plot the load along the length of the beam.
@@ -821,6 +883,7 @@ class Beam:
             use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
+        :param annotation: Annotate key points (max & minimum positions)
         """
 
         self.plot_results(
@@ -828,6 +891,7 @@ class Beam:
             min_points=min_points,
             user_points=user_points,
             fast=fast,
+            annotation=annotation,
         )
 
     def plot_shear(
@@ -835,6 +899,7 @@ class Beam:
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
+        annotation: bool = True,
     ):
         """
         Plot the shear along the length of the beam.
@@ -845,6 +910,7 @@ class Beam:
             use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
+        :param annotation: Annotate key points (max & minimum positions)
         """
 
         self.plot_results(
@@ -852,6 +918,7 @@ class Beam:
             min_points=min_points,
             user_points=user_points,
             fast=fast,
+            annotation=annotation,
         )
 
     def plot_moment(
@@ -859,6 +926,7 @@ class Beam:
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
+        annotation: bool = True,
     ):
         """
         Plot the moment along the length of the beam.
@@ -869,6 +937,7 @@ class Beam:
             use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
+        :param annotation: Annotate key points (max & minimum positions)
         """
 
         self.plot_results(
@@ -876,6 +945,7 @@ class Beam:
             min_points=min_points,
             user_points=user_points,
             fast=fast,
+            annotation=annotation,
         )
 
     def plot_slope(
@@ -883,6 +953,7 @@ class Beam:
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
+        annotation: bool = True,
     ):
         """
         Plot the slope along the length of the beam.
@@ -893,6 +964,7 @@ class Beam:
             use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
+        :param annotation: Annotate key points (max & minimum positions)
         """
 
         self.plot_results(
@@ -900,6 +972,7 @@ class Beam:
             min_points=min_points,
             user_points=user_points,
             fast=fast,
+            annotation=annotation,
         )
 
     def plot_deflection(
@@ -907,6 +980,7 @@ class Beam:
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
+        annotation: bool = True,
     ):
         """
         Plot the deflection along the length of the beam.
@@ -917,6 +991,7 @@ class Beam:
             use an adaptive algorithm to try and find any singularities in the beam
             curves. If the fast method doesn't give correct results,
             consider trying the slow method.
+        :param annotation: Annotate key points (max & minimum positions)
         """
 
         self.plot_results(
@@ -924,6 +999,7 @@ class Beam:
             min_points=min_points,
             user_points=user_points,
             fast=fast,
+            annotation=annotation,
         )
 
     def reaction_summary(self):
