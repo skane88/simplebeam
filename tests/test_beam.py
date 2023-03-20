@@ -64,11 +64,7 @@ def test_moment_curve():
     assert isclose(y[x.index(0.25 * l)], 0.5 * P * l * 0.25)
     assert isclose(y[x.index(0.75 * l)], 0.5 * P * l * 0.25)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points=expected_points, x=x, l=l)
 
 
 def test_moment_curve_fast():
