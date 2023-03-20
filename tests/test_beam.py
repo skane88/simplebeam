@@ -10,12 +10,21 @@ import pytest
 from simplebeam import fix_ended, point, simple, udl
 
 
-def check_expected_points(expected_points, x, l):
-    for e in expected_points:
-        assert e in x
+def check_expected_points(expected_points, actual_points, length):
+    """
+    Helper method to check that all expected points are found in the results.
 
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    :param expected_points: the expected points to find.
+    :param actual_points: the actual points to check.
+    :param length: the length of the beam.
+    """
+
+    for e in expected_points:
+        assert e in actual_points
+
+    # Check that there is a point at the nearest possible point to 0, and to l.
+    assert nextafter(0, length) in actual_points
+    assert nextafter(length, 0) in actual_points
 
 
 @pytest.mark.parametrize("fast", [(True), (False)])
@@ -42,7 +51,7 @@ def test_moment_curve(fast):
 
     x, y = beam.moment_curve(user_points=user_points, fast=fast)
 
-    check_expected_points(expected_points=expected_points, x=x, l=l)
+    check_expected_points(expected_points=expected_points, actual_points=x, length=l)
 
     assert isclose(max(y), 0.125 * w * l**2)
 
@@ -50,7 +59,7 @@ def test_moment_curve(fast):
 
     x, y = beam.moment_curve(user_points=user_points, fast=fast)
 
-    check_expected_points(expected_points=expected_points, x=x, l=l)
+    check_expected_points(expected_points=expected_points, actual_points=x, length=l)
 
     assert isclose(max(y), (1 / 24) * w * l**2)
     assert isclose(min(y), -(1 / 12) * w * l**2)
@@ -66,7 +75,7 @@ def test_moment_curve(fast):
     assert isclose(y[x.index(0.25 * l)], 0.5 * P * l * 0.25)
     assert isclose(y[x.index(0.75 * l)], 0.5 * P * l * 0.25)
 
-    check_expected_points(expected_points=expected_points, x=x, l=l)
+    check_expected_points(expected_points=expected_points, actual_points=x, length=l)
 
 
 @pytest.mark.parametrize("fast", [(True), (False)])
@@ -102,7 +111,7 @@ def test_shear_curve(fast):
 
     x, y = beam.shear_curve(user_points=user_points, fast=fast)
 
-    check_expected_points(expected_points=expected_points, x=x, l=l)
+    check_expected_points(expected_points=expected_points, actual_points=x, length=l)
 
     assert isclose(max(y), 0.5 * w * l)
     assert isclose(min(y), -0.5 * w * l)
