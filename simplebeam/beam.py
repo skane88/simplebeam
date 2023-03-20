@@ -1168,6 +1168,302 @@ class Beam:
         console = Console()
         console.print(table)
 
+    def _max_result(
+        self,
+        result_type: ResultType,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum values of a result type along the beam.
+        Returns a tuple of the form:
+
+        (max_val, min_val)
+
+        :param result_type: The result type to request.
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        v = self._max_result_locations(
+            result_type=result_type,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+        return v[0][1], v[1][1]
+
+    def _max_result_locations(
+        self,
+        result_type: ResultType,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum shears along the beam. Returns a tuple of the form:
+
+        ((max_location, max_value), (min_location, min_value))
+
+        Note that if multiple locations have the same shear, only the first from the
+        LHS end will be returned.
+
+        :param result_type: The result type to request.
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        match result_type:
+            case ResultType.SHEAR:
+                curve = self.shear_curve
+            case ResultType.MOMENT:
+                curve = self.moment_curve
+            case ResultType.SLOPE:
+                curve = self.slope_curve
+            case ResultType.DEFLECTION:
+                curve = self.deflection_curve
+            case _:
+                raise ResultError("Invalid Result Type Requested")
+
+        x, y = curve(min_points=min_points, user_points=user_points, fast=fast)
+
+        max_y = max(y)
+        min_y = min(y)
+        max_loc = x[y.index(max_y)]
+        min_loc = x[y.index(min_y)]
+
+        return (max_loc, max_y), (min_loc, min_y)
+
+    def max_shear(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum shears along the beam. Returns a tuple of the form:
+
+        (max_shear, min_shear)
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.SHEAR,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_shear_locations(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum shears along the beam. Returns a tuple of the form:
+
+        ((max_location, max_shear), (min_location, min_shear))
+
+        Note that if multiple locations have the same shear, only the first from the
+        LHS end will be returned.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result_locations(
+            result_type=ResultType.SHEAR,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_moment(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum moments along the beam. Returns a tuple of the form:
+
+        (max_moment, min_moment)
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.MOMENT,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_moment_locations(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum moments along the beam. Returns a tuple of the form:
+
+        ((max_location, max_moment), (min_location, min_moment))
+
+        Note that if multiple locations have the same moment, only the first from the
+        LHS end will be returned.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result_locations(
+            result_type=ResultType.MOMENT,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_slope(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum slopes along the beam. Returns a tuple of the form:
+
+        (max_slope, min_slope)
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.SLOPE,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_slope_locations(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum slopes along the beam. Returns a tuple of the form:
+
+        ((max_location, max_slope), (min_location, min_slope))
+
+        Note that if multiple locations have the same slope, only the first from the
+        LHS end will be returned.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result_locations(
+            result_type=ResultType.SLOPE,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_deflection(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum deflections along the beam. Returns a tuple of the form:
+
+        (max_deflection, min_deflection)
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.DEFLECTION,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_deflection_locations(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum deflections along the beam. Returns a tuple of the form:
+
+        ((max_location, max_deflection), (min_location, min_deflection))
+
+        Note that if multiple locations have the same deflection, only the first from
+        the LHS end will be returned.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result_locations(
+            result_type=ResultType.DEFLECTION,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
     def __repr__(self):
         restraints = [r.short_name for r in self.restraints]
 
