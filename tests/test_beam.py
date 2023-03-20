@@ -9,6 +9,14 @@ import numpy as np
 from simplebeam import fix_ended, point, simple, udl
 
 
+def check_expected_points(expected_points, x, l):
+    for e in expected_points:
+        assert e in x
+
+    assert nextafter(0, l) in x
+    assert nextafter(l, 0) in x
+
+
 def test_moment_curve():
     """
     Test the moment curve method.
@@ -32,11 +40,7 @@ def test_moment_curve():
 
     x, y = beam.moment_curve(user_points=user_points, fast=False)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points=expected_points, x=x, l=l)
 
     assert isclose(max(y), 0.125 * w * l**2)
 
@@ -44,11 +48,7 @@ def test_moment_curve():
 
     x, y = beam.moment_curve(user_points=user_points, fast=False)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points=expected_points, x=x, l=l)
 
     assert isclose(max(y), (1 / 24) * w * l**2)
     assert isclose(min(y), -(1 / 12) * w * l**2)
@@ -94,11 +94,7 @@ def test_moment_curve_fast():
 
     x, y = beam.moment_curve(user_points=user_points)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points=expected_points, x=x, l=l)
 
     assert isclose(max(y), 0.125 * w * l**2)
 
@@ -106,11 +102,7 @@ def test_moment_curve_fast():
 
     x, y = beam.moment_curve(user_points=user_points)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points=expected_points, x=x, l=l)
 
     assert isclose(max(y), (1 / 24) * w * l**2)
     assert isclose(min(y), -(1 / 12) * w * l**2)
@@ -126,11 +118,7 @@ def test_moment_curve_fast():
     assert isclose(y[x.index(0.25 * l)], 0.5 * P * l * 0.25)
     assert isclose(y[x.index(0.75 * l)], 0.5 * P * l * 0.25)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points=expected_points, x=x, l=l)
 
 
 def test_shear_curve():
@@ -156,11 +144,7 @@ def test_shear_curve():
 
     x, y = beam.shear_curve(user_points=user_points, fast=False)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points, x, l)
 
     assert isclose(max(y), 0.5 * w * l)
     assert isclose(min(y), -0.5 * w * l)
@@ -169,8 +153,7 @@ def test_shear_curve():
 
     x, y = beam.shear_curve(user_points=user_points, fast=False)
 
-    for e in expected_points:
-        assert e in x
+    check_expected_points(expected_points=expected_points, x=x, l=l)
 
     assert isclose(max(y), 0.5 * w * l)
     assert isclose(min(y), -0.5 * w * l)
@@ -192,11 +175,7 @@ def test_shear_curve():
     assert isclose(y[x.index(0.25 * l)], 0.5 * P)
     assert isclose(y[x.index(0.75 * l)], -0.5 * P)
 
-    for e in expected_points:
-        assert e in x
-
-    assert nextafter(0, l) in x
-    assert nextafter(l, 0) in x
+    check_expected_points(expected_points, x, l)
 
 
 def test_shear_at_point():
