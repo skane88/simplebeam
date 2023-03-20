@@ -1351,7 +1351,7 @@ def clean_points(x_coords, y_coords, x_to_keep=None):
 def simple(
     length,
     elastic_modulus=200e9,
-    second_moment=1.0,
+    second_moment=0.0001,
     loads: Load | list[Load] | None = None,
 ):
     """
@@ -1380,7 +1380,7 @@ def simple(
 def fix_ended(
     length,
     elastic_modulus=200e9,
-    second_moment=1.0,
+    second_moment=0.0001,
     loads: Load | list[Load] | None = None,
 ):
     """
@@ -1409,7 +1409,7 @@ def fix_ended(
 def propped_cantilever(
     length,
     elastic_modulus=200e9,
-    second_moment=1.0,
+    second_moment=0.0001,
     loads: Load | list[Load] | None = None,
     fixed_left: bool = True,
 ):
@@ -1442,7 +1442,7 @@ def propped_cantilever(
 def cantilever(
     length,
     elastic_modulus=200e9,
-    second_moment=1.0,
+    second_moment=0.0001,
     loads: Load | list[Load] | None = None,
     fixed_left: bool = True,
 ):
