@@ -12,11 +12,6 @@ The use of the term "Simple" does not mean that only simply-supported beams will
 
 This is primarily intended to be a proof of concept package for me - at this point it is not a robust means for doing your engineering analysis. This may change as the package develops.
 
-# Disclaimer
-While all efforts have been made to ensure that the appropriate engineering theories etc. have been implemented correctly, it is the user's responsibilty to ensure that all output is correct. In particular, users should be familiar with basic structural mechanics and standard engineering practices.
-
-For example, you should be doing independent checks of tools you take from unknown authors on the internet.
-
 # Installation
 Use your preferred virtual environment solution and then simply pip install.
 
@@ -62,6 +57,21 @@ Or:
 >>> beam.plot_moment()
 ```
 ![Example 2](docs\images\example2.png)
+```python
+>>> beam.reaction_summary()
+
+                                  Reactions                                   
+┌────────────────────────────┬────────────────────────────┬───────────────────┐
+│          Position          │           Force            │      Moment       │
+├────────────────────────────┼────────────────────────────┼───────────────────┤
+│         0.000e+00          │         4.062e+03          │       None        │
+│         2.000e+00          │         1.062e+04          │       None        │
+│         4.000e+00          │         1.031e+04          │       None        │
+├────────────────────────────┼────────────────────────────┼───────────────────┤
+│            Max.            │         1.062e+04          │       None        │
+│            Min.            │         4.062e+03          │       None        │
+└────────────────────────────┴────────────────────────────┴───────────────────┘
+```
 
 # Documentation
 You're reading it. Additionally, check the tests folder to see additional uses. I may add documentation at some future point in time but no promises. 
@@ -72,6 +82,11 @@ The following future developments *may* be done:
 - [ ] Implementation of helper methods for different load types.
 - [ ] Multiple load cases & load combinations
 - [ ] Implementation of beams with pins & varying properties.
+
+# Disclaimer
+While all efforts have been made to ensure that the appropriate engineering theories etc. have been implemented correctly, it is the user's responsibilty to ensure that all output is correct. In particular, users should be familiar with basic structural mechanics and standard engineering practices.
+
+For example, you should be doing independent checks of tools you take from unknown authors on the internet.
 
 # Contributing
 Feel free to contribute through a pull request to provide bug fixes, new features or documentation.
