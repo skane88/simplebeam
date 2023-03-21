@@ -42,7 +42,9 @@ By itself, this seems like overkill - M = PL / 4 would be faster. However, consi
 
 >>> beam.plot_deflection()
 ```
-![Example 1](docs\images\example1.png)
+<p align="center">
+  <img src="docs/images/example1.png" width="500"/>
+</p>
 
 Or:
 
@@ -56,7 +58,10 @@ Or:
 >>> beam = Beam(length=length, elastic_modulus=200e9, second_moment=0.0001, restraints=[r1, r2, r3], loads=l1)
 >>> beam.plot_moment()
 ```
-![Example 2](docs\images\example2.png)
+<p align="center">
+  <img src="docs/images/example2.png" width="500"/>
+</p>
+
 ```python
 >>> beam.reaction_summary()
 
