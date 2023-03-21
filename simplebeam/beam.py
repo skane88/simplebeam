@@ -754,7 +754,7 @@ class Beam:
 
     def plot_results(  # pylint: disable=R0913
         self,
-        result_type: ResultType | str,
+        result_type: ResultType,
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
@@ -763,8 +763,7 @@ class Beam:
         """
         Plot the results along the length of the beam.
 
-        :param result_type: A ResultType object or the following strings:
-            'shear', 'moment', 'slope', 'deflection' or 's', 'm', 'sl', 'd'
+        :param result_type: A ResultType object
         :param min_points: The minimum no. of points to return.
         :param user_points: Points to keep at user defined locations.
         :param fast: If fast, only evaluate at min_points and user_points. If not fast,
@@ -774,38 +773,15 @@ class Beam:
         :param annotation: Annotate key points (max & minimum positions)
         """
 
-        result_map = {
-            "s": ResultType.SHEAR,
-            "m": ResultType.MOMENT,
-            "sl": ResultType.SLOPE,
-            "d": ResultType.DEFLECTION,
-            "shear": ResultType.SHEAR,
-            "moment": ResultType.MOMENT,
-            "slope": ResultType.SLOPE,
-            "deflection": ResultType.DEFLECTION,
-        }
-
-        if isinstance(result_type, str):
-            result_type = result_map[result_type]
-
-        match result_type:
-            case ResultType.LOAD:
-                curve = self._load_curve
-            case ResultType.SHEAR:
-                curve = self.shear_curve
-            case ResultType.MOMENT:
-                curve = self.moment_curve
-            case ResultType.SLOPE:
-                curve = self.slope_curve
-            case ResultType.DEFLECTION:
-                curve = self.deflection_curve
-            case _:
-                raise ResultError("Invalid Result Type Requested")
+        x, y = self._result_curve(
+            result_type=result_type,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
 
         y_label = f"{result_type.value.capitalize()}"
         ax_title = f"{result_type.value.capitalize()} Along Beam"
-
-        x, y = curve(min_points=min_points, user_points=user_points, fast=fast)
 
         fig, ax = plt.subplots()
 
