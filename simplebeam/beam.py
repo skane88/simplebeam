@@ -1009,21 +1009,21 @@ class Beam:
 
             table.add_row(
                 f"{rest.position:.3e}",
-                f"{r['F']:{'' if r['F'] is None else '.3e'}}",
-                f"{r['M']:{'' if r['M'] is None else '.3e'}}",
+                f'{r["F"]}' if r["F"] is None else f'{float(r["F"]):.3e}',
+                f'{r["M"]}' if r["M"] is None else f'{float(r["M"]):.3e}',
             )
 
         table.add_section()
 
         table.add_row(
             "Max.",
-            f"{max_force:{'' if max_force is None else '.3e'}}",
-            f"{max_moment:{'' if max_moment is None else '.3e'}}",
+            f"{max_force}" if max_force is None else f"{float(max_force):.3e}",
+            f"{max_moment}" if max_moment is None else f"{float(max_moment):.3e}",
         )
         table.add_row(
             "Min.",
-            f"{min_force:{'' if min_force is None else '.3e'}}",
-            f"{min_moment:{'' if min_moment is None else '.3e'}}",
+            f"{min_force}" if min_force is None else f"{float(min_force):.3e}",
+            f"{min_moment}" if min_moment is None else f"{float(min_moment):.3e}",
         )
 
         console = Console()
