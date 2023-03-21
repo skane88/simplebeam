@@ -577,6 +577,10 @@ class Beam:
             consider trying the slow method.
         """
 
+        # Note - using a single generic result type method and then calling into it
+        # for the specific result type methods so that the behaviour is consistent
+        # across all of them.
+
         eq = self._equations(result_type=result_type)
 
         symbol = self._symbeam.variable  # type: ignore
@@ -750,7 +754,7 @@ class Beam:
 
     def plot_results(  # pylint: disable=R0913
         self,
-        result_type: ResultType | str,
+        result_type: ResultType,
         min_points: int = 101,
         user_points: list[float] | float | None = None,
         fast: bool = True,
@@ -759,8 +763,7 @@ class Beam:
         """
         Plot the results along the length of the beam.
 
-        :param result_type: A ResultType object or the following strings:
-            'shear', 'moment', 'slope', 'deflection' or 's', 'm', 'sl', 'd'
+        :param result_type: A ResultType object
         :param min_points: The minimum no. of points to return.
         :param user_points: Points to keep at user defined locations.
         :param fast: If fast, only evaluate at min_points and user_points. If not fast,
@@ -770,38 +773,15 @@ class Beam:
         :param annotation: Annotate key points (max & minimum positions)
         """
 
-        result_map = {
-            "s": ResultType.SHEAR,
-            "m": ResultType.MOMENT,
-            "sl": ResultType.SLOPE,
-            "d": ResultType.DEFLECTION,
-            "shear": ResultType.SHEAR,
-            "moment": ResultType.MOMENT,
-            "slope": ResultType.SLOPE,
-            "deflection": ResultType.DEFLECTION,
-        }
-
-        if isinstance(result_type, str):
-            result_type = result_map[result_type]
-
-        match result_type:
-            case ResultType.LOAD:
-                curve = self._load_curve
-            case ResultType.SHEAR:
-                curve = self.shear_curve
-            case ResultType.MOMENT:
-                curve = self.moment_curve
-            case ResultType.SLOPE:
-                curve = self.slope_curve
-            case ResultType.DEFLECTION:
-                curve = self.deflection_curve
-            case _:
-                raise ResultError("Invalid Result Type Requested")
+        x, y = self._result_curve(
+            result_type=result_type,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
 
         y_label = f"{result_type.value.capitalize()}"
         ax_title = f"{result_type.value.capitalize()} Along Beam"
-
-        x, y = curve(min_points=min_points, user_points=user_points, fast=fast)
 
         fig, ax = plt.subplots()
 
@@ -1029,21 +1009,21 @@ class Beam:
 
             table.add_row(
                 f"{rest.position:.3e}",
-                f"{r['F']:{'' if r['F'] is None else '.3e'}}",
-                f"{r['M']:{'' if r['M'] is None else '.3e'}}",
+                f'{r["F"]}' if r["F"] is None else f'{float(r["F"]):.3e}',
+                f'{r["M"]}' if r["M"] is None else f'{float(r["M"]):.3e}',
             )
 
         table.add_section()
 
         table.add_row(
             "Max.",
-            f"{max_force:{'' if max_force is None else '.3e'}}",
-            f"{max_moment:{'' if max_moment is None else '.3e'}}",
+            f"{max_force}" if max_force is None else f"{float(max_force):.3e}",
+            f"{max_moment}" if max_moment is None else f"{float(max_moment):.3e}",
         )
         table.add_row(
             "Min.",
-            f"{min_force:{'' if min_force is None else '.3e'}}",
-            f"{min_moment:{'' if min_moment is None else '.3e'}}",
+            f"{min_force}" if min_force is None else f"{float(min_force):.3e}",
+            f"{min_moment}" if min_moment is None else f"{float(min_moment):.3e}",
         )
 
         console = Console()
@@ -1177,9 +1157,6 @@ class Beam:
     ):
         """
         Determine the maximum values of a result type along the beam.
-        Returns a tuple of the form:
-
-        (max_val, min_val)
 
         :param result_type: The result type to request.
         :param min_points: The minimum no. of points to return.
@@ -1190,16 +1167,19 @@ class Beam:
             consider trying the slow method.
         """
 
-        v = self._max_result_locations(
-            result_type=result_type,
-            min_points=min_points,
-            user_points=user_points,
-            fast=fast,
+        # Note: using a generic method here so that the behaviour of all the "Max"
+        # result methods is consistent.
+
+        return max(
+            self._result_curve(
+                result_type=result_type,
+                min_points=min_points,
+                user_points=user_points,
+                fast=fast,
+            )[1]
         )
 
-        return v[0][1], v[1][1]
-
-    def _max_result_locations(
+    def _min_result(
         self,
         result_type: ResultType,
         min_points: int = 101,
@@ -1207,12 +1187,7 @@ class Beam:
         fast: bool = True,
     ):
         """
-        Determine the maximum shears along the beam. Returns a tuple of the form:
-
-        ((max_location, max_value), (min_location, min_value))
-
-        Note that if multiple locations have the same shear, only the first from the
-        LHS end will be returned.
+        Determine the minimum values of a result type along the beam.
 
         :param result_type: The result type to request.
         :param min_points: The minimum no. of points to return.
@@ -1223,26 +1198,17 @@ class Beam:
             consider trying the slow method.
         """
 
-        match result_type:
-            case ResultType.SHEAR:
-                curve = self.shear_curve
-            case ResultType.MOMENT:
-                curve = self.moment_curve
-            case ResultType.SLOPE:
-                curve = self.slope_curve
-            case ResultType.DEFLECTION:
-                curve = self.deflection_curve
-            case _:
-                raise ResultError("Invalid Result Type Requested")
+        # Note: using a generic method here so that the behaviour of all the "Max"
+        # result methods is consistent.
 
-        x, y = curve(min_points=min_points, user_points=user_points, fast=fast)
-
-        max_y = max(y)
-        min_y = min(y)
-        max_loc = x[y.index(max_y)]
-        min_loc = x[y.index(min_y)]
-
-        return (max_loc, max_y), (min_loc, min_y)
+        return min(
+            self._result_curve(
+                result_type=result_type,
+                min_points=min_points,
+                user_points=user_points,
+                fast=fast,
+            )[1]
+        )
 
     def max_shear(
         self,
@@ -1251,9 +1217,7 @@ class Beam:
         fast: bool = True,
     ):
         """
-        Determine the maximum shears along the beam. Returns a tuple of the form:
-
-        (max_shear, min_shear)
+        Determine the maximum shears along the beam.
 
         :param min_points: The minimum no. of points to return.
         :param user_points: Points to keep at user defined locations.
@@ -1269,6 +1233,212 @@ class Beam:
             user_points=user_points,
             fast=fast,
         )
+
+    def max_moment(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum moments along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.MOMENT,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_slope(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum slopes along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.SLOPE,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def max_deflection(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum deflections along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.DEFLECTION,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def min_shear(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the minimum shears along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._min_result(
+            result_type=ResultType.SHEAR,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def min_moment(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the minimum moments along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._min_result(
+            result_type=ResultType.MOMENT,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def min_slope(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the minimum slopes along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.SLOPE,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def min_deflection(
+        self,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the minimum deflections along the beam.
+
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        return self._max_result(
+            result_type=ResultType.DEFLECTION,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+    def _max_result_locations(
+        self,
+        result_type: ResultType,
+        min_points: int = 101,
+        user_points: list[float] | float | None = None,
+        fast: bool = True,
+    ):
+        """
+        Determine the maximum result along the beam. Returns a tuple of the form:
+
+        ((max_location, max_value), (min_location, min_value))
+
+        Note that if multiple locations have the same result value, only the first
+        from the LHS end will be returned.
+
+        :param result_type: The result type to request.
+        :param min_points: The minimum no. of points to return.
+        :param user_points: Points to keep at user defined locations.
+        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
+            use an adaptive algorithm to try and find any singularities in the beam
+            curves. If the fast method doesn't give correct results,
+            consider trying the slow method.
+        """
+
+        x, y = self._result_curve(
+            result_type=result_type,
+            min_points=min_points,
+            user_points=user_points,
+            fast=fast,
+        )
+
+        max_y = max(y)
+        min_y = min(y)
+        max_loc = x[y.index(max_y)]
+        min_loc = x[y.index(min_y)]
+
+        return (max_loc, max_y), (min_loc, min_y)
 
     def max_shear_locations(
         self,
@@ -1294,32 +1464,6 @@ class Beam:
 
         return self._max_result_locations(
             result_type=ResultType.SHEAR,
-            min_points=min_points,
-            user_points=user_points,
-            fast=fast,
-        )
-
-    def max_moment(
-        self,
-        min_points: int = 101,
-        user_points: list[float] | float | None = None,
-        fast: bool = True,
-    ):
-        """
-        Determine the maximum moments along the beam. Returns a tuple of the form:
-
-        (max_moment, min_moment)
-
-        :param min_points: The minimum no. of points to return.
-        :param user_points: Points to keep at user defined locations.
-        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
-            use an adaptive algorithm to try and find any singularities in the beam
-            curves. If the fast method doesn't give correct results,
-            consider trying the slow method.
-        """
-
-        return self._max_result(
-            result_type=ResultType.MOMENT,
             min_points=min_points,
             user_points=user_points,
             fast=fast,
@@ -1354,32 +1498,6 @@ class Beam:
             fast=fast,
         )
 
-    def max_slope(
-        self,
-        min_points: int = 101,
-        user_points: list[float] | float | None = None,
-        fast: bool = True,
-    ):
-        """
-        Determine the maximum slopes along the beam. Returns a tuple of the form:
-
-        (max_slope, min_slope)
-
-        :param min_points: The minimum no. of points to return.
-        :param user_points: Points to keep at user defined locations.
-        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
-            use an adaptive algorithm to try and find any singularities in the beam
-            curves. If the fast method doesn't give correct results,
-            consider trying the slow method.
-        """
-
-        return self._max_result(
-            result_type=ResultType.SLOPE,
-            min_points=min_points,
-            user_points=user_points,
-            fast=fast,
-        )
-
     def max_slope_locations(
         self,
         min_points: int = 101,
@@ -1404,32 +1522,6 @@ class Beam:
 
         return self._max_result_locations(
             result_type=ResultType.SLOPE,
-            min_points=min_points,
-            user_points=user_points,
-            fast=fast,
-        )
-
-    def max_deflection(
-        self,
-        min_points: int = 101,
-        user_points: list[float] | float | None = None,
-        fast: bool = True,
-    ):
-        """
-        Determine the maximum deflections along the beam. Returns a tuple of the form:
-
-        (max_deflection, min_deflection)
-
-        :param min_points: The minimum no. of points to return.
-        :param user_points: Points to keep at user defined locations.
-        :param fast: If fast, only evaluate at min_points and user_points. If not fast,
-            use an adaptive algorithm to try and find any singularities in the beam
-            curves. If the fast method doesn't give correct results,
-            consider trying the slow method.
-        """
-
-        return self._max_result(
-            result_type=ResultType.DEFLECTION,
             min_points=min_points,
             user_points=user_points,
             fast=fast,
