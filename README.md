@@ -61,6 +61,7 @@ Or:
 <p align="center">
   <img src="docs/images/example2.png" width="500"/>
 </p>
+
 ```python
 >>> beam.reaction_summary()
 
