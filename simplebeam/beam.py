@@ -1627,13 +1627,13 @@ def get_points(expr, start, end, min_depth: int = 4, max_depth: int = 8):
         :param q: The second point to sample between.
         :param depth: The current depth of the recursive algorithm.
         """
-        # Randomly sample to avoid aliasing.
+        # Randomly sample around the mid-point to avoid aliasing.
         random = 0.45 + np.random.rand() * 0.1
 
-        xnew = p[0] + random * (q[0] - p[0])
+        x_new = p[0] + random * (q[0] - p[0])
 
-        ynew = func(xnew)
-        new_point = np.array([xnew, ynew])
+        y_new = func(x_new)
+        new_point = np.array([x_new, y_new])
 
         # Sample if the points are not collinear, or if the depth is less than the
         # minimum depth. We are not using np.linspace to avoid aliasing.
