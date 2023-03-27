@@ -1371,7 +1371,7 @@ class Beam:
             consider trying the slow method.
         """
 
-        return self._max_result(
+        return self._min_result(
             result_type=ResultType.SLOPE,
             min_points=min_points,
             user_points=user_points,
@@ -1395,7 +1395,7 @@ class Beam:
             consider trying the slow method.
         """
 
-        return self._max_result(
+        return self._min_result(
             result_type=ResultType.DEFLECTION,
             min_points=min_points,
             user_points=user_points,

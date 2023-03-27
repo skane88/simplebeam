@@ -149,3 +149,40 @@ def test_shear_at_point():
 
     assert isclose(0.5, beam.shear_at_point(0))
     assert isclose(-0.5, beam.shear_at_point(l))
+
+
+def test_min_result():
+    """
+    Test the maximum result calculations
+    """
+
+    l = 5
+    P = -5000
+    l1 = point(magnitude=P, position=l / 2)
+
+    beam = simple(length=l, loads=l1)
+
+    E = beam.elastic_modulus
+    I = beam.second_moment
+
+    assert isclose(P / 2, beam.min_shear())
+    assert isclose(P * l / 4, beam.min_moment())
+    assert isclose(-0.00039062499999999997, beam.min_slope())
+    assert isclose(-0.0006510416666666666, beam.min_deflection())
+
+
+def test_max_result():
+    """
+    Test the maximum result calculations.
+    """
+
+    l = 5
+    P = -5000
+    l1 = point(magnitude=P, position=l / 2)
+
+    beam = simple(length=l, loads=l1)
+
+    assert isclose(-P / 2, beam.max_shear())
+    assert isclose(0, beam.max_moment(), abs_tol=1e-15)
+    assert isclose(0.00039062499999999997, beam.max_slope())
+    assert isclose(0, beam.max_deflection(), abs_tol=1e-15)
