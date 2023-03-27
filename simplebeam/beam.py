@@ -1567,6 +1567,9 @@ class Beam:
             + f"Solved={self.solved}."
         )
 
+    def __str__(self):
+        return repr(self)
+
 
 def _restraint_symbol(*, position, prefix: str) -> Symbol:
     """
