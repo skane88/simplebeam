@@ -58,7 +58,6 @@ class Beam:
         length: Number,
         restraints: list[Restraint] | Restraint | None = None,
         loads: list[Load] | Load | None = None,
-        solve: bool = True,
     ):
         """
         Initialise a Beam object.
@@ -69,13 +68,12 @@ class Beam:
         :param restraints: Any restraints applied to the beam.
         :param loads: Any loads applied to the beam. Can be applied later with
             self.add_load.
-        :param solve: If possible to solve, do so.
         """
 
         self._solved = False
-        self.elastic_modulus = elastic_modulus
-        self.second_moment = second_moment
-        self.length = length
+        self._elastic_modulus = elastic_modulus
+        self._second_moment = second_moment
+        self._length = length
 
         self._restraints = []
         self.add_restraint(restraint=restraints)
@@ -85,8 +83,22 @@ class Beam:
 
         self._symbeam = None
 
-        if solve and self.solveable:
+        if self.solveable:
             self.solve()
+
+    def _args(self):
+        """
+        Return the arguments to create a copy of this beam element, so that it can be
+        copied.
+        """
+
+        return {
+            "elastic_modulus": self.elastic_modulus,
+            "second_moment": self.second_moment,
+            "length": self.length,
+            "restraints": self.restraints,
+            "loads": self.loads,
+        }
 
     @property
     def solved(self):
@@ -104,10 +116,16 @@ class Beam:
 
         return self._elastic_modulus
 
-    @elastic_modulus.setter
-    def elastic_modulus(self, elastic_modulus):
-        self._solved = False
-        self._elastic_modulus = elastic_modulus
+    def set_elastic_modulus(self, elastic_modulus):
+        """
+        Set the elastic modulus of the beam. Returns a new beam object with an updated
+        elastic modulus.
+        """
+
+        kwargs = self._args()
+        kwargs["elastic_modulus"] = elastic_modulus
+
+        return Beam(**kwargs)
 
     @property
     def second_moment(self):
@@ -117,10 +135,16 @@ class Beam:
 
         return self._second_moment
 
-    @second_moment.setter
-    def second_moment(self, second_moment):
-        self._solved = False
-        self._second_moment = second_moment
+    def set_second_moment(self, second_moment):
+        """
+        Set the second moment of the beam. Returns a new beam object with an updated
+        second moment.
+        """
+
+        kwargs = self._args()
+        kwargs["second_moment"] = second_moment
+
+        return Beam(**kwargs)
 
     @property
     def length(self):
@@ -130,10 +154,18 @@ class Beam:
 
         return self._length
 
-    @length.setter
-    def length(self, length):
-        self._solved = False
-        self._length = length
+    def set_length(self, length):
+        """
+        Set the length of the beam. Returns a new beam object with an updated length.
+        Note that this will not re-scale load or restraint data. Changing the length of
+        a beam may result in loads or restraints located at different positions
+        on the beam, or off the end of the beam.
+        """
+
+        kwargs = self._args()
+        kwargs["length"] = length
+
+        return Beam(**kwargs)
 
     @property
     def restraints(self) -> list[Restraint]:
