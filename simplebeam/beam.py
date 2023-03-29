@@ -3,8 +3,8 @@ Basic Beam element class.
 """
 # pylint: disable=C0302
 
-from copy import deepcopy
 import math
+from copy import deepcopy
 from enum import Enum
 from numbers import Number
 
