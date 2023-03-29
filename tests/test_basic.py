@@ -61,9 +61,10 @@ def test_add_restraint():
     r1 = simplebeam.Restraint(position=0.0)
     r2 = simplebeam.Restraint(position=5.0)
 
-    beam.add_restraint(restraint=[r1, r2])
+    beam = beam.add_restraint(restraint=[r1, r2])
 
     assert not beam.solved
+    assert len(beam.restraints) == 2
     assert beam
 
 
