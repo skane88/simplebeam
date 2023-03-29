@@ -176,12 +176,6 @@ class Beam:
 
         return self._restraints
 
-    @restraints.setter
-    def restraints(self, restraints: list[Restraint] | Restraint | None = None):
-        self._solved = False
-        self._restraints = []
-        self.add_restraint(restraint=restraints)
-
     def add_restraint(self, *, restraint: list[Restraint] | Restraint | None = None):
         """
         Add a restraint to the Beam.
