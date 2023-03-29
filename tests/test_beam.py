@@ -162,9 +162,6 @@ def test_min_result():
 
     beam = simple(length=l, loads=l1)
 
-    E = beam.elastic_modulus
-    I = beam.second_moment
-
     assert isclose(P / 2, beam.min_shear())
     assert isclose(P * l / 4, beam.min_moment())
     assert isclose(-0.00039062499999999997, beam.min_slope())
