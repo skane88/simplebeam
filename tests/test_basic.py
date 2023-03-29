@@ -41,6 +41,8 @@ def test_add_load():
     beam.add_load(load=load)
 
     assert not beam.solved
+    assert beam.loads is not None
+    assert len(beam.loads) == 1
     assert beam
 
 
@@ -64,6 +66,7 @@ def test_add_restraint():
     beam = beam.add_restraint(restraint=[r1, r2])
 
     assert not beam.solved
+    assert beam.restraints is not None
     assert len(beam.restraints) == 2
     assert beam
 
