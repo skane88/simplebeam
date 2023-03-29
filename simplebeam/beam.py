@@ -79,7 +79,7 @@ class Beam:
         self._init_restraints(restraint=restraints)
 
         self._loads = []
-        self.add_load(load=loads)
+        self._init_loads(load=loads)
 
         self._symbeam = None
 
@@ -259,9 +259,10 @@ class Beam:
 
         return self._loads
 
-    def add_load(self, load: list[Load] | Load | None = None):
+    def _init_loads(self, load: list[Load] | Load | None = None):
         """
-        Add a load onto the beam.
+        Add loads onto the beam. Note that this is a private method because it updates
+        the beam in-situ.
 
         :param load: The Load object to add, or a list of Load objects.
         """
