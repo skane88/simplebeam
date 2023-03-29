@@ -260,6 +260,26 @@ class Beam:
 
         return self._loads
 
+    def add_load(self, load: list[Load] | Load):
+        """
+        Add loads onto the beam and returns a new Beam object.
+
+        :param load: The Load object to add, or a list of Load objects.
+        """
+
+        kwargs = self._args()
+
+        if isinstance(load, Load):
+            load = [load]
+
+        if kwargs["loads"] is None:
+            kwargs["loads"] = []
+
+        for l in load:
+            kwargs["loads"].append(l)
+
+        return Beam(**kwargs)
+
     def _init_loads(self, load: list[Load] | Load | None = None):
         """
         Add loads onto the beam. Note that this is a private method because it updates
