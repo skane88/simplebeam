@@ -3,6 +3,7 @@ Basic Beam element class.
 """
 # pylint: disable=C0302
 
+from copy import deepcopy
 import math
 from enum import Enum
 from numbers import Number
@@ -96,8 +97,8 @@ class Beam:
             "elastic_modulus": self.elastic_modulus,
             "second_moment": self.second_moment,
             "length": self.length,
-            "restraints": self.restraints,
-            "loads": self.loads,
+            "restraints": deepcopy(self.restraints),
+            "loads": deepcopy(self.loads),
         }
 
     @property
