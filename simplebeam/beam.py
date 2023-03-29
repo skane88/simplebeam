@@ -76,7 +76,7 @@ class Beam:
         self._length = length
 
         self._restraints = []
-        self.add_restraint(restraint=restraints)
+        self._init_restraints(restraint=restraints)
 
         self._loads = []
         self.add_load(load=loads)
@@ -176,9 +176,10 @@ class Beam:
 
         return self._restraints
 
-    def add_restraint(self, *, restraint: list[Restraint] | Restraint | None = None):
+    def _init_restraints(self, *, restraint: list[Restraint] | Restraint | None = None):
         """
-        Add a restraint to the Beam.
+        Add a restraint to the Beam. This method is private as it updates the exist.
+        beam in place.
 
         :param restraint: The restraint or a list of restraints to add.
         """
