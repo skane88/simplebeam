@@ -38,11 +38,14 @@ def test_add_load():
     )
 
     load = simplebeam.Load(order="point", magnitude=10, start=2.5)
-    beam.add_load(load=load)
+    beam2 = beam.add_load(load=load)
 
     assert not beam.solved
-    assert beam.loads is not None
-    assert len(beam.loads) == 1
+    assert len(beam.loads) == 0
+    assert beam
+
+    assert not beam2.solved
+    assert len(beam2.loads) == 1
     assert beam
 
 
@@ -63,12 +66,15 @@ def test_add_restraint():
     r1 = simplebeam.Restraint(position=0.0)
     r2 = simplebeam.Restraint(position=5.0)
 
-    beam = beam.add_restraint(restraint=[r1, r2])
+    beam2 = beam.add_restraint(restraint=[r1, r2])
 
     assert not beam.solved
-    assert beam.restraints is not None
-    assert len(beam.restraints) == 2
+    assert len(beam.restraints) == 0
     assert beam
+
+    assert not beam2.solved
+    assert len(beam2.restraints) == 2
+    assert beam2
 
 
 def test_solve():
@@ -90,13 +96,15 @@ def test_solve():
     r1 = simplebeam.Restraint(position=0.0)
     r2 = simplebeam.Restraint(position=5.0)
 
-    beam.add_restraint(restraint=[r1, r2])
+    assert not beam.solved
+
+    beam = beam.add_restraint(restraint=[r1, r2])
+
+    assert not beam.solved
 
     l1 = simplebeam.Load(order="point", magnitude=-1, start=2.5)
 
-    beam.add_load(l1)
-
-    assert not beam.solved
+    beam = beam.add_load(l1)
 
     beam.solve()
 
@@ -120,11 +128,11 @@ def test_reactions():
     r1 = simplebeam.Restraint(position=0.0)
     r2 = simplebeam.Restraint(position=5.0)
 
-    beam.add_restraint(restraint=[r1, r2])
+    beam = beam.add_restraint(restraint=[r1, r2])
 
     l1 = simplebeam.Load(order="point", magnitude=-1, start=2.5)
 
-    beam.add_load(l1)
+    beam = beam.add_load(l1)
 
     beam.solve()
 

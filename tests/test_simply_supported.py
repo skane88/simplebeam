@@ -29,8 +29,8 @@ def test_point_load(elastic_modulus, second_moment, length, force):
         second_moment=second_moment,
         length=length,
         restraints=[r1, r2],
+        loads=point_load,
     )
-    test_beam.add_load(point_load)
     test_beam.solve()
 
     # now define some equations for the shear, moment etc.
