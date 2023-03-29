@@ -176,6 +176,26 @@ class Beam:
 
         return self._restraints
 
+    def add_restraint(self, restraint: list[Restraint] | Restraint):
+        """
+        Add a restraint to the Beam. Returns a new Beam with the added restraints.
+
+        :param restraint: The restraint or a list of restraints to add.
+        """
+
+        kwargs = self._args()
+
+        if isinstance(restraint, Restraint):
+            restraint = [restraint]
+
+        if kwargs["restraints"] is None:
+            kwargs["restraints"] = []
+
+        for r in restraint:
+            kwargs["restraints"].append(r)
+
+        return Beam(**kwargs)
+
     def _init_restraints(self, *, restraint: list[Restraint] | Restraint | None = None):
         """
         Add a restraint to the Beam. This method is private as it updates the exist.
