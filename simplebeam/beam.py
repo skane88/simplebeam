@@ -189,9 +189,6 @@ class Beam:
         if isinstance(restraint, Restraint):
             restraint = [restraint]
 
-        if kwargs["restraints"] is None:
-            kwargs["restraints"] = []
-
         for r in restraint:
             kwargs["restraints"].append(r)
 
@@ -271,9 +268,6 @@ class Beam:
 
         if isinstance(load, Load):
             load = [load]
-
-        if kwargs["loads"] is None:
-            kwargs["loads"] = []
 
         for l in load:
             kwargs["loads"].append(l)
