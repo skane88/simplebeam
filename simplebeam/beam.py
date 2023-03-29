@@ -244,12 +244,6 @@ class Beam:
 
         return self._loads
 
-    @loads.setter
-    def loads(self, loads: list[Load] | Load | None = None):
-        self._solved = False
-        self._loads = []
-        self.add_load(load=loads)
-
     def add_load(self, load: list[Load] | Load | None = None):
         """
         Add a load onto the beam.
