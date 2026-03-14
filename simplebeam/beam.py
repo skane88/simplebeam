@@ -1009,8 +1009,8 @@ class Beam:
 
             table.add_row(
                 f"{rest.position:.3e}",
-                f'{r["F"]}' if r["F"] is None else f'{float(r["F"]):.3e}',
-                f'{r["M"]}' if r["M"] is None else f'{float(r["M"]):.3e}',
+                f"{r['F']}" if r["F"] is None else f"{float(r['F']):.3e}",
+                f"{r['M']}" if r["M"] is None else f"{float(r['M']):.3e}",
             )
 
         table.add_section()
